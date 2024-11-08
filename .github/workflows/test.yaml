@@ -2,7 +2,7 @@ name: Java CI test with Gradle
 
 on:
   push:
-    branches: [ "test/JOING-38-GitHub-Action" ]
+    branches: [ "develop" ]
 
 jobs:
   build:

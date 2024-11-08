@@ -26,12 +26,11 @@ jobs:
     - name: Setup AWS Credentials
       run: |
         mkdir -p ~/.aws
-        echo "${{ secrets.CREDENTIAL }}" > ~/.aws/credentials
+        echo "${{ secrets.CREDENTIALS }}" > ~/.aws/credentials
       shell: bash
     
     - name: Test with Gradle 8.9
       run: ./gradlew test
-
 
 
   dependency-submission:

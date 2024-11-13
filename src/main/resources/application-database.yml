@@ -7,11 +7,12 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${rds.url}  # ${jdbc.url}
-    username: ${rds.username}  # ${jdbc.username}
-    password: ${rds.password}  # ${jdbc.password}
+    url: ${jdbc.url}
+    username: ${jdbc.username} 
+    password: ${jdbc.password} 
 
   data:
     redis:
       host: ${redis.host}
       port: ${redis.port}
+      

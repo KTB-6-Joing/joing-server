@@ -4,6 +4,7 @@ import com.ktb.joing.common.model.BaseTimeEntity;
 import com.ktb.joing.domain.user.entity.Category;
 import com.ktb.joing.domain.user.entity.MediaType;
 import com.ktb.joing.domain.user.entity.ProductManager;
+import com.ktb.joing.domain.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,16 +51,17 @@ public class Item extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private ProductManager productManager;
+    private User user;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
+
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Etc> etcs = new ArrayList<>();
 
-    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "item")
     private Summary summary;
 
     public void addEtc(Etc etc) {
@@ -67,20 +69,16 @@ public class Item extends BaseTimeEntity {
         etc.setItem(this);
     }
 
-    public void setSummary(Summary summary) {
-        this.summary = summary;
-        summary.setItem(this);
-    }
-
-    public void setProductManager(ProductManager productManager) {
-        this.productManager = productManager;
-        if (productManager != null) {
-            productManager.getItems().add(this);
+    public void setUser(User user) {
+        this.user = user;
+        if (user instanceof ProductManager) {
+            ((ProductManager) user).getItems().add(this);
         }
     }
 
-    public void deleteProductManager() {
-        this.productManager = null;
+    public void setSummary(Summary summary) {
+        this.summary = summary;
+        summary.setItem(this);
     }
 
     public void update(String title, String content, MediaType mediaType, Category category) {
@@ -97,12 +95,12 @@ public class Item extends BaseTimeEntity {
 
     @Builder
     private Item(String title, String content, MediaType mediaType, int score,
-                 ProductManager productManager, Category category, List<Etc> etcs, Summary summary) {
+                 User user, Category category, List<Etc> etcs, Summary summary) {
         this.title = title;
         this.content = content;
         this.mediaType = mediaType;
         this.score = score;
-        this.productManager = productManager;
+        this.user = user;
         this.category = category;
         this.etcs = etcs;
         this.summary = summary;

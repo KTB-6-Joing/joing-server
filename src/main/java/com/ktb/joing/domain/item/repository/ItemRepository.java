@@ -8,12 +8,12 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByProductManagerUsernameAndCreatedDateTimeGreaterThanEqualOrderByCreatedDateTimeDesc(
+    List<Item> findByUserUsernameAndCreatedDateTimeGreaterThanEqualOrderByCreatedDateTimeDesc(
             String username, LocalDateTime startDate
     );
 
     default List<Item> findRecentItems(String username, LocalDateTime startDate) {
-        return findByProductManagerUsernameAndCreatedDateTimeGreaterThanEqualOrderByCreatedDateTimeDesc(
+        return findByUserUsernameAndCreatedDateTimeGreaterThanEqualOrderByCreatedDateTimeDesc(
                 username, startDate
         );
     }

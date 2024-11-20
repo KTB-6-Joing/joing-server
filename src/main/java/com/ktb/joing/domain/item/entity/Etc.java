@@ -32,7 +32,7 @@ public class Etc {
     @JoinColumn(name = "item_id")
     private Item item;
 
-    protected void setItem(Item item) {
+    public void setItem(Item item) {
         this.item = item;
     }
 

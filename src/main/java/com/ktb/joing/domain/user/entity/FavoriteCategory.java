@@ -27,18 +27,14 @@ public class FavoriteCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private ProductManager productManager;
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    protected void setProductManager(ProductManager productManager) {
-        this.productManager = productManager;
-    }
-
     @Builder
-    public FavoriteCategory(ProductManager productManager, Category category) {
-        this.productManager = productManager;
+    public FavoriteCategory(User user, Category category) {
+        this.user = user;
         this.category = category;
     }
 }

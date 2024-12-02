@@ -2,26 +2,35 @@ package com.ktb.joing.domain.user.service;
 
 import com.ktb.joing.domain.auth.entity.TempUser;
 import com.ktb.joing.domain.auth.repository.TempUserRepository;
+import com.ktb.joing.domain.user.client.ProfileAIClient;
 import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
+import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
+import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
 import com.ktb.joing.domain.user.entity.Creator;
 import com.ktb.joing.domain.user.entity.FavoriteCategory;
 import com.ktb.joing.domain.user.entity.ProductManager;
 import com.ktb.joing.domain.user.entity.Role;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
+import com.ktb.joing.domain.user.repository.CreatorRepository;
 import com.ktb.joing.domain.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final TempUserRepository tempUserRepository;
+    private final CreatorRepository creatorRepository;
+    private final ProfileAIClient profileAIClient;
 
     public void creatorSignUp(String username, CreatorSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
@@ -38,6 +47,7 @@ public class UserService {
                 .role(Role.ROLE_USER)
                 .socialId(tempUser.getSocialId())
                 .socialProvider(tempUser.getSocialProvider())
+                .channelId(request.getChannelId())
                 .channelUrl(request.getChannelUrl())
                 .mediaType(request.getMediaType())
                 .category(request.getCategory())
@@ -82,6 +92,17 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw new UserException(UserErrorCode.DUPLICATED_NICKNAME);
         }
+    }
+
+    // 크리에이터 프로필(채널) 유해성 검사
+    public Mono<ProfileEvaluationResponse> profileEvaluation(String username) {
+        Creator creator = creatorRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
+
+        ProfileEvaluationRequest request = new ProfileEvaluationRequest(creator.getChannelId());
+
+        return profileAIClient.profileEvaluation(request)
+        .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
     }
 
 }

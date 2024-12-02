@@ -97,14 +97,13 @@ public class Item extends BaseTimeEntity {
 
     @Builder
     public Item(String title, String content, MediaType mediaType, int score,
-                 ProductManager productManager, Category category, List<Etc> etcs, Summary summary) {
+                 ProductManager productManager, Category category, Summary summary) {
         this.title = title;
         this.content = content;
         this.mediaType = mediaType;
         this.score = score;
         this.productManager = productManager;
         this.category = category;
-        this.etcs = etcs;
         this.summary = summary;
     }
 }

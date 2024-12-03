@@ -30,7 +30,6 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -38,6 +37,7 @@ public class UserService {
     private final CreatorRepository creatorRepository;
     private final ProfileAIClient profileAIClient;
 
+    @Transactional
     public void creatorSignUp(String username, CreatorSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
@@ -63,6 +63,7 @@ public class UserService {
         tempUserRepository.deleteById(username);
     }
 
+    @Transactional
     public void productManagerSignUp(String username, ProductManagerSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
@@ -93,7 +94,6 @@ public class UserService {
     }
 
     // 회원 정보 조회
-    @Transactional(readOnly = true)
     public UserResponse<?> getUser(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
@@ -107,6 +107,7 @@ public class UserService {
     }
 
     // 회원 정보 수정
+    @Transactional
     public UserResponse<?> updateUser(String username, UserUpdateRequest request) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));

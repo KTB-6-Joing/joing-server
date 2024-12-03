@@ -5,6 +5,7 @@ import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.UserResponse;
+import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
 import com.ktb.joing.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,6 +56,13 @@ public class UserController {
             @Valid @RequestBody UserUpdateRequest request) {
         UserResponse<?> response = userService.updateUser(customOAuth2User.getUsername(), request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/evaluation")
+    public Mono<ResponseEntity<ProfileEvaluationResponse>> profileEvaluation(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return userService.profileEvaluation(customOAuth2User.getUsername())
+                .map(ResponseEntity::ok); //
     }
 
 }

@@ -5,6 +5,7 @@ import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
+import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.response.SignupResponse;
@@ -78,8 +79,8 @@ public class UserController {
 
     @GetMapping("/evaluation")
     public Mono<ResponseEntity<ProfileEvaluationResponse>> profileEvaluation(
-            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return userService.profileEvaluation(customOAuth2User.getUsername())
+            @RequestBody ProfileEvaluationRequest request) {
+        return userService.profileEvaluation(request)
                 .map(ResponseEntity::ok);
     }
 

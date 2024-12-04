@@ -18,7 +18,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue(value = "ProductManager")
+@DiscriminatorValue(value = "PRODUCT_MANAGER")
 @SuperBuilder
 public class ProductManager extends User {
 

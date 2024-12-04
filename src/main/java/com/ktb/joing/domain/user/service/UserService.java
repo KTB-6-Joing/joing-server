@@ -8,6 +8,7 @@ import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
+import com.ktb.joing.domain.user.dto.response.SignupResponse;
 import com.ktb.joing.domain.user.dto.response.UserResponse;
 import com.ktb.joing.domain.user.dto.response.UserType;
 import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
@@ -38,7 +39,7 @@ public class UserService {
     private final ProfileAIClient profileAIClient;
 
     @Transactional
-    public void creatorSignUp(String username, CreatorSignupRequest request) {
+    public SignupResponse creatorSignUp(String username, CreatorSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
 
@@ -59,12 +60,13 @@ public class UserService {
                 .build();
 
         userRepository.save(creator);
-
         tempUserRepository.deleteById(username);
+
+        return new SignupResponse("CREATOR");
     }
 
     @Transactional
-    public void productManagerSignUp(String username, ProductManagerSignupRequest request) {
+    public SignupResponse productManagerSignUp(String username, ProductManagerSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
 
@@ -89,8 +91,9 @@ public class UserService {
         });
 
         userRepository.save(user);
-
         tempUserRepository.deleteById(username);
+
+        return new SignupResponse("PRODUCT_MANAGER");
     }
 
     // 회원 정보 조회
@@ -143,7 +146,7 @@ public class UserService {
         ProfileEvaluationRequest request = new ProfileEvaluationRequest(creator.getChannelId());
 
         return profileAIClient.profileEvaluation(request)
-        .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
+                .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
     }
 
 }

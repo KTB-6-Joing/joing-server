@@ -4,6 +4,7 @@ import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
 import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.response.SignupResponse;
 import com.ktb.joing.domain.user.dto.response.UserResponse;
 import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
 import com.ktb.joing.domain.user.service.UserService;
@@ -27,21 +28,22 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup/creator")
-    public ResponseEntity<Void> creatorSignUp(
+    public ResponseEntity<SignupResponse> creatorSignUp(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestBody @Valid CreatorSignupRequest creatorSignupRequest) {
 
-        userService.creatorSignUp(customOAuth2User.getUsername(), creatorSignupRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        SignupResponse response = userService.creatorSignUp(customOAuth2User.getUsername(), creatorSignupRequest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/signup/productmanager")
-    public ResponseEntity<Void> productManagerSignUp(
+    public ResponseEntity<SignupResponse> productManagerSignUp(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestBody @Valid ProductManagerSignupRequest productManagerSignupRequest){
 
-        userService.productManagerSignUp(customOAuth2User.getUsername(), productManagerSignupRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        SignupResponse response = userService.productManagerSignUp(customOAuth2User.getUsername(), productManagerSignupRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping

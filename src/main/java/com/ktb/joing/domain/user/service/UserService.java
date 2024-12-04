@@ -149,12 +149,7 @@ public class UserService {
     }
 
     // 크리에이터 프로필(채널) 유해성 검사
-    public Mono<ProfileEvaluationResponse> profileEvaluation(String username) {
-        Creator creator = creatorRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
-
-        ProfileEvaluationRequest request = new ProfileEvaluationRequest(creator.getChannelId());
-
+    public Mono<ProfileEvaluationResponse> profileEvaluation(ProfileEvaluationRequest request) {
         return profileAIClient.profileEvaluation(request)
                 .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
     }

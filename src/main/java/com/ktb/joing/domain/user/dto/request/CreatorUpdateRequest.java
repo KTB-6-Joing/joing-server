@@ -9,30 +9,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserUpdateRequest {
+public class CreatorUpdateRequest {
     @Size(max = 20, message = "닉네임은 최대 20자까지 가능합니다")
     private String nickname;
 
     @Email(message = "올바른 이메일 형식이 아닙니다")
     private String email;
 
-    private MediaType mediaType;
-    private Category category;
+    private String channelId;
+
     private String channelUrl;
-    private List<Category> favoriteCategories;
+
+    private MediaType mediaType;
+
+    private Category category;
 
     @Builder
-    public UserUpdateRequest(String nickname, String email, MediaType mediaType,
-                             Category category, String channelUrl, List<Category> favoriteCategories) {
+    public CreatorUpdateRequest(String nickname, String email, String channelId, String channelUrl, MediaType mediaType, Category category){
         this.nickname = nickname;
         this.email = email;
+        this.channelId = channelId;
+        this.channelUrl = channelUrl;
         this.mediaType = mediaType;
         this.category = category;
-        this.channelUrl = channelUrl;
-        this.favoriteCategories = favoriteCategories;
     }
 }

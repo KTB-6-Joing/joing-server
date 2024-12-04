@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue(value = "Creator")
+@DiscriminatorValue(value = "CREATOR")
 @SuperBuilder
 public class Creator extends User{
 

@@ -1,7 +1,7 @@
 package com.ktb.joing.domain.user.entity;
 
 import com.ktb.joing.domain.item.entity.Item;
-import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -36,7 +36,7 @@ public class ProductManager extends User {
         favoriteCategory.setProductManager(this);
     }
 
-    public void update(UserUpdateRequest request) {
+    public void update(ProductManagerUpdateRequest request) {
         if (request.getNickname() != null) {
             updateNickname(request.getNickname());
         }

@@ -2,8 +2,9 @@ package com.ktb.joing.domain.user.controller;
 
 import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
 import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
+import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
-import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.response.SignupResponse;
@@ -62,7 +63,7 @@ public class UserController {
     @PatchMapping("/creator")
     public ResponseEntity<CreatorResponse> updateCreator(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @Valid @RequestBody UserUpdateRequest request) {
+            @Valid @RequestBody CreatorUpdateRequest request) {
         CreatorResponse response = userService.updateCreator(customOAuth2User.getUsername(), request);
         return ResponseEntity.ok(response);
     }
@@ -70,7 +71,7 @@ public class UserController {
     @PatchMapping("/productmanager")
     public ResponseEntity<ProductManagerResponse> updateProductManager(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @Valid @RequestBody UserUpdateRequest request) {
+            @Valid @RequestBody ProductManagerUpdateRequest request) {
         ProductManagerResponse response = userService.updateProductManager(customOAuth2User.getUsername(), request);
         return ResponseEntity.ok(response);
     }

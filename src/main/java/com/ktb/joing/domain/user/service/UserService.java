@@ -4,8 +4,9 @@ import com.ktb.joing.domain.auth.entity.TempUser;
 import com.ktb.joing.domain.auth.repository.TempUserRepository;
 import com.ktb.joing.domain.user.client.ProfileAIClient;
 import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
+import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
-import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
@@ -113,7 +114,7 @@ public class UserService {
 
     // 회원 정보 수정(크리에이터)
     @Transactional
-    public CreatorResponse updateCreator(String username, UserUpdateRequest request) {
+    public CreatorResponse updateCreator(String username, CreatorUpdateRequest request) {
         Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
@@ -128,7 +129,7 @@ public class UserService {
 
     // 회원 정보 수정(기획자)
     @Transactional
-    public ProductManagerResponse updateProductManager(String username, UserUpdateRequest request) {
+    public ProductManagerResponse updateProductManager(String username, ProductManagerUpdateRequest request) {
         ProductManager productManager = productManagerRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 

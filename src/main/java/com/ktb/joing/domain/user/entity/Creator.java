@@ -1,6 +1,6 @@
 package com.ktb.joing.domain.user.entity;
 
-import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,7 +35,7 @@ public class Creator extends User{
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    public void update(UserUpdateRequest request) {
+    public void update(CreatorUpdateRequest request) {
         if (request.getNickname() != null) {
             updateNickname(request.getNickname());
         }
@@ -47,6 +47,9 @@ public class Creator extends User{
         }
         if (request.getCategory() != null) {
             this.category = request.getCategory();
+        }
+        if (request.getChannelId() != null) {
+            this.channelId = request.getChannelId();
         }
         if (request.getChannelUrl() != null) {
             this.channelUrl = request.getChannelUrl();

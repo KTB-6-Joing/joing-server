@@ -4,8 +4,9 @@ import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
 import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
+import com.ktb.joing.domain.user.dto.response.CreatorResponse;
+import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.response.SignupResponse;
-import com.ktb.joing.domain.user.dto.response.UserResponse;
 import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
 import com.ktb.joing.domain.user.service.UserService;
 import jakarta.validation.Valid;
@@ -46,17 +47,31 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<UserResponse<?>> getUserInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        UserResponse<?> response = userService.getUser(customOAuth2User.getUsername());
+    @GetMapping("/creator")
+    public ResponseEntity<CreatorResponse> getCreatorInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        CreatorResponse response = userService.getCreatorInfo(customOAuth2User.getUsername());
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping
-    public ResponseEntity<UserResponse<?>> updateUser(
+    @GetMapping("/productmanager")
+    public ResponseEntity<ProductManagerResponse> getProductManagerInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        ProductManagerResponse response = userService.getProductManagerInfo(customOAuth2User.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/creator")
+    public ResponseEntity<CreatorResponse> updateCreator(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @Valid @RequestBody UserUpdateRequest request) {
-        UserResponse<?> response = userService.updateUser(customOAuth2User.getUsername(), request);
+        CreatorResponse response = userService.updateCreator(customOAuth2User.getUsername(), request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/productmanager")
+    public ResponseEntity<ProductManagerResponse> updateProductManager(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @Valid @RequestBody UserUpdateRequest request) {
+        ProductManagerResponse response = userService.updateProductManager(customOAuth2User.getUsername(), request);
         return ResponseEntity.ok(response);
     }
 
@@ -64,7 +79,7 @@ public class UserController {
     public Mono<ResponseEntity<ProfileEvaluationResponse>> profileEvaluation(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return userService.profileEvaluation(customOAuth2User.getUsername())
-                .map(ResponseEntity::ok); //
+                .map(ResponseEntity::ok);
     }
 
 }

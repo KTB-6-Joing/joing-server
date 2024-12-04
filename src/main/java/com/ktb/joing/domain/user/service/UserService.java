@@ -8,19 +8,17 @@ import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.UserUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
-import com.ktb.joing.domain.user.dto.response.SignupResponse;
-import com.ktb.joing.domain.user.dto.response.UserResponse;
-import com.ktb.joing.domain.user.dto.response.UserType;
 import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
 import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
+import com.ktb.joing.domain.user.dto.response.SignupResponse;
 import com.ktb.joing.domain.user.entity.Creator;
 import com.ktb.joing.domain.user.entity.FavoriteCategory;
 import com.ktb.joing.domain.user.entity.ProductManager;
 import com.ktb.joing.domain.user.entity.Role;
-import com.ktb.joing.domain.user.entity.User;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
+import com.ktb.joing.domain.user.repository.ProductManagerRepository;
 import com.ktb.joing.domain.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +34,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final TempUserRepository tempUserRepository;
     private final CreatorRepository creatorRepository;
+    private final ProductManagerRepository productManagerRepository;
     private final ProfileAIClient profileAIClient;
 
+    // 회원가입(크리에이터)
     @Transactional
     public SignupResponse creatorSignUp(String username, CreatorSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
@@ -65,6 +65,7 @@ public class UserService {
         return new SignupResponse("CREATOR");
     }
 
+    // 회원가입(기획자)
     @Transactional
     public SignupResponse productManagerSignUp(String username, ProductManagerSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
@@ -96,39 +97,47 @@ public class UserService {
         return new SignupResponse("PRODUCT_MANAGER");
     }
 
-    // 회원 정보 조회
-    public UserResponse<?> getUser(String username) {
-        User user = userRepository.findByUsername(username)
+    // 회원 정보 조회(크리에이터)
+    public CreatorResponse getCreatorInfo(String username) {
+        Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-
-        if (user instanceof Creator) {
-            return new UserResponse<>(UserType.CREATOR,
-                    CreatorResponse.builder().creator((Creator) user).build());
-        }
-        return new UserResponse<>(UserType.PRODUCT_MANAGER,
-                ProductManagerResponse.builder().productManager((ProductManager) user).build());
+        return CreatorResponse.builder().creator(creator).build();
     }
 
-    // 회원 정보 수정
+    // 회원 정보 조회(기획자)
+    public ProductManagerResponse getProductManagerInfo(String username) {
+        ProductManager productManager = productManagerRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        return ProductManagerResponse.builder().productManager(productManager).build();
+    }
+
+    // 회원 정보 수정(크리에이터)
     @Transactional
-    public UserResponse<?> updateUser(String username, UserUpdateRequest request) {
-        User user = userRepository.findByUsername(username)
+    public CreatorResponse updateCreator(String username, UserUpdateRequest request) {
+        Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         if (request.getNickname() != null) {
             validateDuplicateNickname(request.getNickname());
         }
 
-        if (user instanceof Creator creator) {
-            creator.update(request);
-            return new UserResponse<>(UserType.CREATOR,
-                    CreatorResponse.builder().creator(creator).build());
+        creator.update(request);
+        return CreatorResponse.builder().creator(creator).build();
+    }
+
+
+    // 회원 정보 수정(기획자)
+    @Transactional
+    public ProductManagerResponse updateProductManager(String username, UserUpdateRequest request) {
+        ProductManager productManager = productManagerRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        if (request.getNickname() != null) {
+            validateDuplicateNickname(request.getNickname());
         }
 
-        ProductManager productManager = (ProductManager) user;
         productManager.update(request);
-        return new UserResponse<>(UserType.PRODUCT_MANAGER,
-                ProductManagerResponse.builder().productManager(productManager).build());
+        return ProductManagerResponse.builder().productManager(productManager).build();
     }
 
     // 닉네임 중복 확인

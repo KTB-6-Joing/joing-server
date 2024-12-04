@@ -17,7 +17,7 @@ public class UserUpdateRequest {
     @Size(max = 20, message = "닉네임은 최대 20자까지 가능합니다")
     private String nickname;
 
-    @Email(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "올바른 이메일 형식이 아닙니다")
+    @Email(message = "올바른 이메일 형식이 아닙니다")
     private String email;
 
     private MediaType mediaType;

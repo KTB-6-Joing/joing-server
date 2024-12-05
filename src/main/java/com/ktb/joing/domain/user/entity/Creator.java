@@ -1,5 +1,6 @@
 package com.ktb.joing.domain.user.entity;
 
+import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue(value = "Creator")
+@DiscriminatorValue(value = "CREATOR")
 @SuperBuilder
 public class Creator extends User{
 
@@ -33,5 +34,26 @@ public class Creator extends User{
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    public void update(CreatorUpdateRequest request) {
+        if (request.getNickname() != null) {
+            updateNickname(request.getNickname());
+        }
+        if (request.getEmail() != null) {
+            updateEmail(request.getEmail());
+        }
+        if (request.getMediaType() != null) {
+            this.mediaType = request.getMediaType();
+        }
+        if (request.getCategory() != null) {
+            this.category = request.getCategory();
+        }
+        if (request.getChannelId() != null) {
+            this.channelId = request.getChannelId();
+        }
+        if (request.getChannelUrl() != null) {
+            this.channelUrl = request.getChannelUrl();
+        }
+    }
 
 }

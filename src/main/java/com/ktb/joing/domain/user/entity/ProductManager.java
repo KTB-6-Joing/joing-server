@@ -1,6 +1,7 @@
 package com.ktb.joing.domain.user.entity;
 
 import com.ktb.joing.domain.item.entity.Item;
+import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue(value = "ProductManager")
+@DiscriminatorValue(value = "PRODUCT_MANAGER")
 @SuperBuilder
 public class ProductManager extends User {
 
@@ -33,6 +34,24 @@ public class ProductManager extends User {
     public void addFavoriteCategory(FavoriteCategory favoriteCategory) {
         this.favoriteCategories.add(favoriteCategory);
         favoriteCategory.setProductManager(this);
+    }
+
+    public void update(ProductManagerUpdateRequest request) {
+        if (request.getNickname() != null) {
+            updateNickname(request.getNickname());
+        }
+        if (request.getEmail() != null) {
+            updateEmail(request.getEmail());
+        }
+        if (request.getFavoriteCategories() != null && !request.getFavoriteCategories().isEmpty()) {
+            this.favoriteCategories.clear();
+            request.getFavoriteCategories().forEach(category -> {
+                FavoriteCategory favoriteCategory = FavoriteCategory.builder()
+                        .category(category)
+                        .build();
+                addFavoriteCategory(favoriteCategory);
+            });
+        }
     }
 
     public void delete() {

@@ -2,10 +2,15 @@ package com.ktb.joing.domain.auth.handler;
 
 import com.ktb.joing.domain.auth.cookie.CookieUtils;
 import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
+import com.ktb.joing.domain.auth.exception.AuthErrorCode;
+import com.ktb.joing.domain.auth.exception.AuthException;
 import com.ktb.joing.domain.auth.jwt.JwtUtil;
 
 import com.ktb.joing.domain.auth.jwt.TokenService;
 import com.ktb.joing.domain.auth.repository.TempUserRepository;
+import com.ktb.joing.domain.user.entity.User;
+import com.ktb.joing.domain.user.repository.UserRepository;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final CookieUtils cookieUtils;
     private final TokenService tokenService;
     private final TempUserRepository tempUserRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -84,8 +90,13 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("access token: {}", access);
         log.info("refresh token: {}", refresh);
 
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+        String userType = user.getClass().getAnnotation(DiscriminatorValue.class).value();
+
         return UriComponentsBuilder.fromUriString(frontUrl)
                 .queryParam("token", access)
+                .queryParam("type", userType)
                 .build()
                 .toUriString();
     }

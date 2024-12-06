@@ -149,7 +149,8 @@ public class UserService {
     }
 
     // 크리에이터 프로필(채널) 유해성 검사
-    public Mono<ProfileEvaluationResponse> profileEvaluation(ProfileEvaluationRequest request) {
+    public Mono<ProfileEvaluationResponse> profileEvaluation(String channelId) {
+        ProfileEvaluationRequest request = new ProfileEvaluationRequest(channelId);
         return profileAIClient.profileEvaluation(request)
                 .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
     }

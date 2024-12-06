@@ -5,7 +5,6 @@ import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
-import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.response.SignupResponse;
@@ -18,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,10 +77,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/evaluation")
+    @GetMapping("/evaluation/{channelId}")
     public Mono<ResponseEntity<ProfileEvaluationResponse>> profileEvaluation(
-            @RequestBody ProfileEvaluationRequest request) {
-        return userService.profileEvaluation(request)
+            @PathVariable String channelId) {
+        return userService.profileEvaluation(channelId)
                 .map(ResponseEntity::ok);
     }
 

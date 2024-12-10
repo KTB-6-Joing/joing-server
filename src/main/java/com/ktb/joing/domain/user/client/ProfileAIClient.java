@@ -22,7 +22,7 @@ public class ProfileAIClient {
 
     public Mono<ProfileEvaluationResponse> profileEvaluation(ProfileEvaluationRequest request) {
         return reactiveHttpService.post(
-                aiUrl + "/ai/evaluation/profile",
+                aiUrl + "/gen/channel/evaluation",
                 request,
                 ProfileEvaluationResponse.class
         ).doOnError(e -> log.error("프로필 평가 요청 실패: {}", e.getMessage()));

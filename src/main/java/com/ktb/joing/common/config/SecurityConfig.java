@@ -66,14 +66,16 @@ public class SecurityConfig {
                 .addFilterBefore(customLogoutFilter, LogoutFilter.class);
 
         // 경로별 인가 작업
-        http.securityMatcher("/**") // 모든 요청에 대해
+        http
+                .securityMatcher("/**") // 모든 요청에 대해
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/healthz", "/oauth2/**", "/login/**").permitAll()
-                        .requestMatchers("/api/v1/users/evaluation/**").permitAll()
+                        .requestMatchers("/api/v1/users/evaluation/**").permitAll() // AI 서버 관련 엔드 포인트
+                        .requestMatchers("/api/v1/items/*/evaluation").permitAll()
+                        .requestMatchers("/api/v1/items/*/summary").permitAll()
                         .requestMatchers("/signup/**", "/api/v1/users/signup/**").hasRole("TEMP_USER")
                         .anyRequest().authenticated()
                 );
-
         //세션 설정 : STATELESS
         http
                 .sessionManagement((session) -> session

@@ -1,11 +1,13 @@
 package com.ktb.joing.domain.item.dto.request;
 
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EtcRequest {
 
     @Size(max = 50)

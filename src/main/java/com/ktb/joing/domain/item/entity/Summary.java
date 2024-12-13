@@ -36,6 +36,12 @@ public class Summary {
         this.item = item;
     }
 
+    public void update(String title, String content, String keyword) {
+        if (title != null) this.title = title;
+        if (content != null) this.content = content;
+        if (keyword != null) this.keyword = keyword;
+    }
+
     @Builder
     public Summary(Long id, String title, String content, String keyword, Item item) {
         this.id = id;

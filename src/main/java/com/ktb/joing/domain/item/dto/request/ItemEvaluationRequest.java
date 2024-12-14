@@ -20,7 +20,7 @@ public class ItemEvaluationRequest {
     @JsonProperty("proposal_score")
     private float proposalScore;
 
-    @JsonProperty("additional_Features")
+    @JsonProperty("additional_features")
     private Map<String, String> additionalFeatures;
 
     @Builder

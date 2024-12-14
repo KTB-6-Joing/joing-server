@@ -1,5 +1,6 @@
 package com.ktb.joing.domain.user.service;
 
+import com.ktb.joing.common.exception.AiException;
 import com.ktb.joing.domain.auth.entity.TempUser;
 import com.ktb.joing.domain.auth.repository.TempUserRepository;
 import com.ktb.joing.domain.user.client.ProfileAIClient;
@@ -152,7 +153,12 @@ public class UserService {
     public Mono<ProfileEvaluationResponse> profileEvaluation(String channelId) {
         ProfileEvaluationRequest request = new ProfileEvaluationRequest(channelId);
         return profileAIClient.profileEvaluation(request)
-                .onErrorMap(e -> new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED));
+                .onErrorMap(e -> {
+                    if (e instanceof AiException) {
+                        return e;
+                    }
+                    return new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED);
+                });
     }
 
 }

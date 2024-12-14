@@ -21,7 +21,7 @@ public class ItemAIClient {
 
     public Mono<ItemEvaluationResponse> requestEvaluation(ItemEvaluationRequest request) {
         return reactiveHttpService.post(
-                aiUrl + "/ai/evaluation/proposal",
+                aiUrl + "/gen/proposal/evaluation",
                 request,
                 ItemEvaluationResponse.class
         ).doOnError(e -> log.error("기획안 평가 요청 실패: {}", e.getMessage()));
@@ -29,7 +29,7 @@ public class ItemAIClient {
 
     public Mono<ItemEvaluationResponse> regenerateSummary(ItemEvaluationRequest request) {
         return reactiveHttpService.post(
-                aiUrl + "/ai/generation/summary",
+                aiUrl + "/gen/proposal/summary",
                 request,
                 ItemEvaluationResponse.class
         ).doOnError(e -> log.error("기획안 요약 생성 실패: {}", e.getMessage()));

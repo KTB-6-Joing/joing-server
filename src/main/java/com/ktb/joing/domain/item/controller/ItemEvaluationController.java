@@ -8,8 +8,8 @@ import com.ktb.joing.domain.item.service.ItemSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -21,7 +21,7 @@ public class ItemEvaluationController {
     private final ItemEvaluationService itemEvaluationService;
     private final ItemSummaryService itemSummaryService;
 
-    @GetMapping("/{itemId}/evaluation")
+    @PostMapping("/{itemId}/evaluation")
     public Mono<ResponseEntity<EvaluationResponse<?>>> requestEvaluation(
             @PathVariable Long itemId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
@@ -30,7 +30,7 @@ public class ItemEvaluationController {
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping("/{itemId}/summary")
+    @PostMapping("/{itemId}/summary")
     public Mono<ResponseEntity<SummaryView>> regenerateSummary(
             @PathVariable Long itemId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {

@@ -59,14 +59,23 @@ public class ItemSummaryService {
                 .build();
     }
 
-
-    public void updateItemSummary(Item item, SummaryResponse summaryData) {
-        Summary summary = Summary.builder()
-                .title(summaryData.getTitle())
-                .content(summaryData.getContent())
-                .keyword(String.join(",", summaryData.getKeywords()))
-                .build();
-        item.setSummary(summary);
-        itemRepository.save(item);
+    public void updateItemSummary(Item item, SummaryResponse summaryResponse) {
+        Summary summary = item.getSummary();
+        if (summary == null) {
+            summary = Summary.builder()
+                    .title(summaryResponse.getTitle())
+                    .content(summaryResponse.getContent())
+                    .keyword(String.join(",", summaryResponse.getKeywords()))
+                    .build();
+            item.setSummary(summary);
+        } else {
+            String keyword = summaryResponse.getKeywords() != null ?
+                    String.join(",", summaryResponse.getKeywords()) : null;
+            summary.update(
+                    summaryResponse.getTitle(),
+                    summaryResponse.getContent(),
+                    keyword
+            );
+        }
     }
 }

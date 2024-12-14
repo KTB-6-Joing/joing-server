@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatorRecommendRequest {
     private String title;
-    @JsonProperty("item_Category")
+    @JsonProperty("item_category")
     private String category;
-    @JsonProperty("media_type")
     private String mediaType;
     private float score;
     @JsonProperty("item_content")

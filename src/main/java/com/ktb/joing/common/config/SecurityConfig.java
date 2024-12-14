@@ -73,6 +73,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/evaluation/**").permitAll() // AI 서버 관련 엔드 포인트
                         .requestMatchers("/api/v1/items/*/evaluation").permitAll()
                         .requestMatchers("/api/v1/items/*/summary").permitAll()
+                        .requestMatchers("/api/v1/recommendations/**").permitAll()
                         .requestMatchers("/signup/**", "/api/v1/users/signup/**").hasRole("TEMP_USER")
                         .anyRequest().authenticated()
                 );

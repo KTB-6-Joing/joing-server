@@ -25,12 +25,7 @@ public class ReactiveHttpService {
                                 .flatMap(errorBody -> {
                                     try {
                                         AIErrorResponse errorResponse = objectMapper.readValue(errorBody, AIErrorResponse.class);
-                                        AiErrorCode errorCode = switch (errorResponse.getDetail()) {
-                                            case "유효하지 않은 형식의 채널아이디입니다." -> AiErrorCode.AI_INVALID_CHANNEL_ID_FORMAT;
-                                            case "유효하지 않은 채널아이디입니다." -> AiErrorCode.AI_INVALID_CHANNEL_ID;
-                                            case "영상의 개수가 충분하지 않아 더이상의 평가가 불가능합니다." -> AiErrorCode.AI_INSUFFICIENT_VIDEOS;
-                                            default -> AiErrorCode.AI_VALIDATION_ERROR;
-                                        };
+                                        AiErrorCode errorCode = getAiErrorCode(errorResponse.getDetail().getCode());
                                         return Mono.error(new AiException(errorCode, errorBody));
                                     } catch (Exception e) {
                                         return Mono.error(new AiException(AiErrorCode.AI_VALIDATION_ERROR, errorBody));
@@ -46,6 +41,15 @@ public class ReactiveHttpService {
                                 .flatMap(errorBody -> Mono.error(new AiException(AiErrorCode.AI_BAD_GATEWAY, errorBody)))
                 )
                 .bodyToMono(responseType);
+    }
+
+    private AiErrorCode getAiErrorCode(String code) {
+        return switch (code) {
+            case "INVALID_CHANNEL_ID_FORMAT" -> AiErrorCode.AI_INVALID_CHANNEL_ID_FORMAT;
+            case "INVALID_CHANNEL_ID" -> AiErrorCode.AI_INVALID_CHANNEL_ID;
+            case "NOT_ENOUGH_UPLOADS" -> AiErrorCode.AI_NOT_ENOUGH_UPLOADS;
+            default -> AiErrorCode.AI_VALIDATION_ERROR;
+        };
     }
 
 }

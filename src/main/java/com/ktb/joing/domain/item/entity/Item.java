@@ -46,7 +46,7 @@ public class Item extends BaseTimeEntity {
     private MediaType mediaType;
 
     @Column(nullable = false)
-    private int score; // 디폴트 정하기
+    private float score;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -57,7 +57,7 @@ public class Item extends BaseTimeEntity {
     private Category category;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Etc> etcs = new ArrayList<>();
+    private final List<Etc> etcs = new ArrayList<>();
 
     @OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private Summary summary;

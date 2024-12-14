@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AIErrorResponse {
-    private AIErrorDetail detail;
+public class AIErrorDetail {
+    private String code;
+    private String message;
 }

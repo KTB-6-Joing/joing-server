@@ -12,7 +12,6 @@ import com.ktb.joing.domain.recommend.dto.response.ItemRecommendResponse;
 import com.ktb.joing.domain.recommend.exception.RecommendErrorCode;
 import com.ktb.joing.domain.recommend.exception.RecommendException;
 import com.ktb.joing.domain.user.entity.Creator;
-import com.ktb.joing.domain.user.entity.MediaType;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
@@ -67,13 +66,10 @@ public class RecommendService {
     }
 
     private CreatorRecommendRequest creatorRecommendRequest(Item item) {
-        String mediaType = null;
-        if (item.getMediaType()==MediaType.LONG_FORM) mediaType = "long";
-        else if (item.getMediaType()==MediaType.SHORT_FORM) mediaType = "short";
         return CreatorRecommendRequest.builder()
                 .title(item.getTitle())
                 .category(item.getCategory().toString().toLowerCase())
-                .mediaType(mediaType) //.mediaType(item.getMediaType().toString().toLowerCase())
+                .mediaType(item.getMediaType().toString().toLowerCase())
                 .score(item.getScore())
                 .content(item.getContent())
                 .build();

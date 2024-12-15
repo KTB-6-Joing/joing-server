@@ -17,7 +17,7 @@ public class CreatorSignupRequest {
     private String nickname;
 
     @NotBlank
-    @Email(regexp = "^[A-Za-z0-9+_.-]+@(.+)$", message = "올바른 이메일 형식이 아닙니다")
+    @Email(message = "올바른 이메일 형식이 아닙니다")
     private String email;
 
     private String channelId;

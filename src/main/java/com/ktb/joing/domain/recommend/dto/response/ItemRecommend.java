@@ -1,0 +1,19 @@
+package com.ktb.joing.domain.recommend.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ItemRecommend {
+    @JsonProperty("item_id")
+    private Long itemId;
+    private String title;
+    @JsonProperty("media_type")
+    private String mediaType;
+    private int score;
+    @JsonProperty("item_content")
+    private String content;
+}

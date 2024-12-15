@@ -1,26 +1,21 @@
 package com.ktb.joing.domain.item.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Map;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class ItemEvaluationRequest {
     private String title;
     private String content;
-
-    @JsonProperty("media_type")
     private String mediaType;
-
-    @JsonProperty("proposal_score")
     private float proposalScore;
-
-    @JsonProperty("additional_features")
     private Map<String, String> additionalFeatures;
 
     @Builder

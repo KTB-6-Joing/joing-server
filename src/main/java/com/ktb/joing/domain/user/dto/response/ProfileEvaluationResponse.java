@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProfileEvaluationResponse {
-    private boolean appropriate;
+    private boolean evaluation_status;
     private String reason;
 
     @Builder
-    public ProfileEvaluationResponse(boolean appropriate, String reason) {
-        this.appropriate = appropriate;
+    public ProfileEvaluationResponse(boolean evaluation_status, String reason) {
+        this.evaluation_status = evaluation_status;
         this.reason = reason;
     }
 }

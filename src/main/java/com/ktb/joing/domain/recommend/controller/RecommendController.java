@@ -29,7 +29,7 @@ public class RecommendController {
     @GetMapping("/users/{userId}")
     public  Mono<ResponseEntity<ItemRecommendResponse>> getRecommendedItems(@PathVariable @Valid Long userId, @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return recommendService.getRecommendedItems(userId, customOAuth2User.getUsername())
-                .map(ResponseEntity::ok); // 수정
+                .map(ResponseEntity::ok);
     }
 
 }

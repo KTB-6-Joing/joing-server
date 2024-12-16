@@ -68,6 +68,7 @@ public class ItemSummaryService {
                     .keyword(String.join(",", summaryResponse.getKeywords()))
                     .build();
             item.setSummary(summary);
+            itemRepository.save(item);
         } else {
             String keyword = summaryResponse.getKeywords() != null ?
                     String.join(",", summaryResponse.getKeywords()) : null;
@@ -76,6 +77,7 @@ public class ItemSummaryService {
                     summaryResponse.getContent(),
                     keyword
             );
+            itemRepository.save(item);
         }
     }
 }

@@ -40,10 +40,12 @@ public class ItemDetailResponse {
                         .etc(etc)
                         .build())
                 .toList();
-        this.summary = new SummaryView(
-                item.getSummary().getTitle(),
-                item.getSummary().getContent(),
-                Arrays.asList(item.getSummary().getKeyword().split(","))
-        );
+        if (item.getSummary() != null) {
+            this.summary = SummaryView.builder()
+                    .title(item.getSummary().getTitle())
+                    .content(item.getSummary().getContent())
+                    .keywords(Arrays.asList(item.getSummary().getKeyword().split(",")))
+                    .build();
+        }
     }
 }

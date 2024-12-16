@@ -12,7 +12,9 @@ import com.ktb.joing.domain.matching.entity.Matching;
 import com.ktb.joing.domain.matching.exception.MatchingErrorCode;
 import com.ktb.joing.domain.matching.exception.MatchingException;
 import com.ktb.joing.domain.matching.repository.MatchingRepository;
+import com.ktb.joing.domain.notification.service.NotificationService;
 import com.ktb.joing.domain.user.entity.Creator;
+import com.ktb.joing.domain.user.entity.User;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
@@ -30,6 +32,7 @@ public class MatchingService {
     private final MatchingRepository matchingRepository;
     private final ItemRepository itemRepository;
     private final CreatorRepository creatorRepository;
+    private final NotificationService notificationService;
 
     // 매칭 요청 생성
     public MatchingResponse createMatching(MatchingRequest request, String username) {
@@ -57,6 +60,9 @@ public class MatchingService {
                 .build();
 
         matching = matchingRepository.save(matching);
+
+        sendMatchingNotification(matching, MatchingStatus.PENDING);
+
         return new MatchingResponse(matching);
     }
 
@@ -98,6 +104,8 @@ public class MatchingService {
 
         matching.cancel();
         matchingRepository.save(matching);
+
+        sendMatchingNotification(matching, MatchingStatus.CANCELED);
     }
 
     // 매칭 답장에 대한 응답 - 매칭 상태 변경 (수락/ 거절)
@@ -120,7 +128,63 @@ public class MatchingService {
 
         matching.updateStatus(newStatus);
         matching = matchingRepository.save(matching);
+
+        sendMatchingNotification(matching, newStatus);
+
         return new MatchingResponse(matching);
     }
 
+    private void sendMatchingNotification(Matching matching, MatchingStatus action) {
+        String notificationContent;
+        String relatedUrl = "/matching/" + matching.getId();
+        User receiver;
+        boolean isProductManagerSender = matching.getSender() == MatchingSender.PRODUCT_MANAGER;
+
+        switch(action) {
+            case PENDING:
+                if (isProductManagerSender) {
+                    notificationContent = String.format("[매칭 요청] %s님이 '%s' 기획안에 대해 매칭을 요청했습니다.",
+                            matching.getItem().getProductManager().getNickname(),
+                            matching.getItem().getTitle());
+                    receiver = matching.getCreator();
+                } else {
+                    notificationContent = String.format("[매칭 요청] %s님이 '%s' 기획안에 참여하고 싶어합니다.",
+                            matching.getCreator().getNickname(),
+                            matching.getItem().getTitle());
+                    receiver = matching.getItem().getProductManager();
+                }
+                break;
+
+            case CANCELED:
+                if (isProductManagerSender) {
+                    notificationContent = String.format("[매칭 취소] '%s' 기획안에 대한 매칭 요청이 취소되었습니다.",
+                            matching.getItem().getTitle());
+                    receiver = matching.getCreator();
+                } else {
+                    notificationContent = String.format("[매칭 취소] '%s' 기획안에 대한 참여 요청이 취소되었습니다.",
+                            matching.getItem().getTitle());
+                    receiver = matching.getItem().getProductManager();
+                }
+                break;
+
+            case ACCEPTED:
+            case REJECTED:
+                String actionStr = action.toString().toLowerCase();
+                if (isProductManagerSender) {
+                    notificationContent = String.format("[매칭 %s] '%s' 기획안에 대한 매칭 요청이 %s되었습니다.",
+                            actionStr, matching.getItem().getTitle(), actionStr);
+                    receiver = matching.getItem().getProductManager();
+                } else {
+                    notificationContent = String.format("[매칭 %s] '%s' 기획안에 대한 참여 요청이 %s되었습니다.",
+                            actionStr, matching.getItem().getTitle(), actionStr);
+                    receiver = matching.getCreator();
+                }
+                break;
+
+            default:
+                throw new MatchingException(MatchingErrorCode.INVALID_MATCHING_STATUS);
+        }
+
+        notificationService.send(receiver, notificationContent, relatedUrl);
+    }
 }

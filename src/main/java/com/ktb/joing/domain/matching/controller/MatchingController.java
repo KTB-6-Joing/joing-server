@@ -1,13 +1,15 @@
 package com.ktb.joing.domain.matching.controller;
 
 import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
+import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
+import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
 import com.ktb.joing.domain.matching.dto.request.MatchingStatusRequest;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
 import com.ktb.joing.domain.matching.service.MatchingService;
-import com.ktb.joing.domain.matching.dto.request.MatchingRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,13 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchingController {
     private final MatchingService matchingService;
 
-    @PostMapping
-    public ResponseEntity<MatchingResponse> requestMatching(
-            @RequestBody @Valid MatchingRequest request,
+    @PostMapping("/creator")
+    public ResponseEntity<MatchingResponse> requestMatchingToCreator(
+            @RequestBody @Valid MatchingRequestToCreator request,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
-        return ResponseEntity.ok(
-                matchingService.createMatching(request, customOAuth2User.getUsername())
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(matchingService.createMatchingToCreator(request, customOAuth2User.getUsername()));
+    }
+
+    @PostMapping("/item")
+    public ResponseEntity<MatchingResponse> requestMatchingToItem(
+            @RequestBody @Valid MatchingRequestToItem request,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(matchingService.createMatchingToItem(request, customOAuth2User.getUsername()));
     }
 
     @GetMapping("/{matchingId}")

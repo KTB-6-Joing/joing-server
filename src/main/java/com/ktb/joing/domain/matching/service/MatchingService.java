@@ -4,9 +4,10 @@ import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.item.exception.ItemErrorCode;
 import com.ktb.joing.domain.item.exception.ItemException;
 import com.ktb.joing.domain.item.repository.ItemRepository;
+import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
+import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
 import com.ktb.joing.domain.matching.entity.MatchingSender;
 import com.ktb.joing.domain.matching.entity.MatchingStatus;
-import com.ktb.joing.domain.matching.dto.request.MatchingRequest;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
 import com.ktb.joing.domain.matching.entity.Matching;
 import com.ktb.joing.domain.matching.exception.MatchingErrorCode;
@@ -34,33 +35,45 @@ public class MatchingService {
     private final CreatorRepository creatorRepository;
     private final NotificationService notificationService;
 
-    // 매칭 요청 생성
-    public MatchingResponse createMatching(MatchingRequest request, String username) {
-
+    // 기획자가 크리에이터에게 매칭 요청
+    public MatchingResponse createMatchingToCreator(MatchingRequestToCreator request, String username) {
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
         Creator creator = creatorRepository.findById(request.getCreatorId())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        //권한 검증 - 요청을 보내는 사람이 실제로 기획안 작성인/크리에이터 본인이 맞는지 확인
-        if (request.getSender() == MatchingSender.PRODUCT_MANAGER) {
-            if (!item.getProductManager().getUsername().equals(username)) {
-                throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
-            }
-        }else{
-            if (!creator.getUsername().equals(username)) {
-                throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
-            }
+        // 권한 검증 - 요청자가 해당 아이템의 기획자인지 확인
+        if (!item.getProductManager().getUsername().equals(username)) {
+            throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
         }
 
         Matching matching = Matching.builder()
                 .item(item)
                 .creator(creator)
-                .sender(request.getSender())
+                .sender(MatchingSender.PRODUCT_MANAGER)
                 .build();
 
         matching = matchingRepository.save(matching);
+        sendMatchingNotification(matching, MatchingStatus.PENDING);
 
+        return new MatchingResponse(matching);
+    }
+
+    // 크리에이터가 기획자(기획안)에게 매칭 요청
+    public MatchingResponse createMatchingToItem(MatchingRequestToItem request, String username) {
+        Item item = itemRepository.findById(request.getItemId())
+                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+
+        Creator creator = creatorRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        Matching matching = Matching.builder()
+                .item(item)
+                .creator(creator)
+                .sender(MatchingSender.CREATOR)
+                .build();
+
+        matching = matchingRepository.save(matching);
         sendMatchingNotification(matching, MatchingStatus.PENDING);
 
         return new MatchingResponse(matching);

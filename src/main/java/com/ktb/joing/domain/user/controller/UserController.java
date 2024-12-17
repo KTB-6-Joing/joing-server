@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping("/signup/creator")
     public ResponseEntity<SignupResponse> creatorSignUp(
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @RequestBody @Valid CreatorSignupRequest creatorSignupRequest) {
+            @RequestBody @Valid CreatorSignupRequest creatorSignupRequest) { //
 
         SignupResponse response = userService.creatorSignUp(customOAuth2User.getUsername(), creatorSignupRequest);
 

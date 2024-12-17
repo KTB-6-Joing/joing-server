@@ -22,16 +22,19 @@ public class CreatorUpdateRequest {
 
     private String channelUrl;
 
+    private String channelImage;
+
     private MediaType mediaType;
 
     private Category category;
 
     @Builder
-    public CreatorUpdateRequest(String nickname, String email, String channelId, String channelUrl, MediaType mediaType, Category category){
+    public CreatorUpdateRequest(String nickname, String email, String channelId, String channelUrl, String channelImage, MediaType mediaType, Category category){
         this.nickname = nickname;
         this.email = email;
         this.channelId = channelId;
         this.channelUrl = channelUrl;
+        this.channelImage = channelImage; //
         this.mediaType = mediaType;
         this.category = category;
     }

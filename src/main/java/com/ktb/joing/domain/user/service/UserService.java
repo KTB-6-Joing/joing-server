@@ -58,6 +58,7 @@ public class UserService {
                 .socialProvider(tempUser.getSocialProvider())
                 .channelId(request.getChannelId())
                 .channelUrl(request.getChannelUrl())
+                .subscribers(request.getSubscribers())
                 .mediaType(request.getMediaType())
                 .category(request.getCategory())
                 .build();

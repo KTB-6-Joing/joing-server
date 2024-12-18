@@ -6,6 +6,7 @@ import com.ktb.joing.domain.item.exception.ItemException;
 import com.ktb.joing.domain.item.repository.ItemRepository;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
+import com.ktb.joing.domain.matching.dto.response.MatchingDetailResponse;
 import com.ktb.joing.domain.matching.entity.MatchingSender;
 import com.ktb.joing.domain.matching.entity.MatchingStatus;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
@@ -79,6 +80,23 @@ public class MatchingService {
         return new MatchingResponse(matching);
     }
 
+    // 매칭 자세한 내용 - 매칭 수락시 화면
+    public MatchingDetailResponse getMatching(Long matchingId, String username) {
+        // 매칭 정보 조회
+        Matching matching = matchingRepository.findById(matchingId)
+                .orElseThrow(() -> new MatchingException(MatchingErrorCode.MATCHING_NOT_FOUND));
+
+        // 접근 권한 확인 - 매칭의 크리에이터이거나 기획자만 조회 가능
+        if (!matching.getCreator().getUsername().equals(username) &&
+                !matching.getItem().getProductManager().getUsername().equals(username)) {
+            throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
+        }
+
+        return MatchingDetailResponse.builder()
+                .matching(matching)
+                .build();
+    }
+
     // 매칭 상태 조회
     public MatchingResponse getMatchingStatus(Long matchingId, String username) {
         Matching matching = matchingRepository.findById(matchingId)
@@ -90,19 +108,19 @@ public class MatchingService {
             throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
         }
 
-        return new MatchingResponse(matching);
+        return MatchingResponse.builder()
+                .matching(matching)
+                .build();
     }
 
     // 매칭 취소
     public void cancelMatching(Long matchingId, String username) {
         Matching matching = matchingRepository.findById(matchingId)
                 .orElseThrow(() -> new MatchingException(MatchingErrorCode.MATCHING_NOT_FOUND));
-        log.info("매칭 id로 매칭 찾기 {}", matching.toString());
 
         // 권한 검증 - 매칭을 요청한 사람만 취소 가능
         if (matching.getSender() == MatchingSender.PRODUCT_MANAGER) {
             if (!matching.getItem().getProductManager().getUsername().equals(username)) {
-                log.info("요청한 사람이 기획자");
                 throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
             }
         } else {

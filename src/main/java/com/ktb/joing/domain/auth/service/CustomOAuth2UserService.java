@@ -6,6 +6,7 @@ import com.ktb.joing.domain.auth.dto.OAuth2Response;
 import com.ktb.joing.domain.auth.dto.UserDto;
 import com.ktb.joing.domain.auth.entity.TempUser;
 import com.ktb.joing.domain.auth.repository.TempUserRepository;
+import com.ktb.joing.domain.user.entity.ProductManager;
 import com.ktb.joing.domain.user.entity.Role;
 import com.ktb.joing.domain.user.entity.SocialProvider;
 import com.ktb.joing.domain.user.entity.User;
@@ -68,16 +69,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(userDto);
         }
         else {
-            existData.updateProfileImage(oAuth2Response.getProfileImage());
-
-            userRepository.save(existData);
+            if (existData instanceof ProductManager) {
+                existData.updateProfileImage(oAuth2Response.getProfileImage());
+                userRepository.save(existData);
+            }
 
             UserDto userDto = new UserDto();
             userDto.setUsername(existData.getUsername());
             userDto.setName(existData.getNickname());
             userDto.setProvider(oAuth2Response.getProvider());
             userDto.setProviderId(oAuth2Response.getProviderId());
-            userDto.setProfileImage(oAuth2Response.getProfileImage());
+            userDto.setProfileImage(existData.getProfileImage());
             userDto.setRole(existData.getRole());
 
             return new CustomOAuth2User(userDto);

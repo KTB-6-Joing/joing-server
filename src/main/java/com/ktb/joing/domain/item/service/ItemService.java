@@ -18,19 +18,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class ItemService {
     private final ItemRepository itemRepository;
     private final ProductManagerRepository productManagerRepository;
 
     // 기획안 생성
+    @Transactional
     public ItemResponse createItem(ItemCreateRequest request, String username) {
         ProductManager productManager = productManagerRepository.findByUsername(username)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.INVALID_USER_TYPE));
@@ -61,7 +60,6 @@ public class ItemService {
     }
 
     // 기획안 단 건 조회
-    @Transactional(readOnly = true)
     public ItemDetailResponse getItem(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
@@ -75,14 +73,8 @@ public class ItemService {
     public List<ItemRecentResponse> getRecentItems(String username) {
         LocalDateTime threeMonthsAgo = LocalDateTime.now().minusMonths(3);
 
-        List<Item> recentItems = itemRepository.findRecentItems(
-                username,
-                threeMonthsAgo
-        );
-
-        return recentItems.isEmpty()
-                ? Collections.emptyList()
-                : recentItems.stream()
+        return itemRepository.findRecentItems(username, threeMonthsAgo)
+                .stream()
                 .map(item -> ItemRecentResponse.builder()
                         .item(item)
                         .build())
@@ -90,6 +82,7 @@ public class ItemService {
     }
 
     // 기획안 수정
+    @Transactional
     public ItemDetailResponse updateItem(Long itemId, ItemUpdateRequest request, String username) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
@@ -120,6 +113,7 @@ public class ItemService {
     }
 
     // 기획안 삭제
+    @Transactional
     public void deleteItem(Long itemId, String username) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));

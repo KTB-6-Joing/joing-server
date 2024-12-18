@@ -5,6 +5,7 @@ import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
 import com.ktb.joing.domain.matching.dto.request.MatchingStatusRequest;
 import com.ktb.joing.domain.matching.dto.response.MatchingDetailResponse;
+import com.ktb.joing.domain.matching.dto.response.MatchingListResponse;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
 import com.ktb.joing.domain.matching.service.MatchingService;
 import jakarta.validation.Valid;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -43,6 +46,12 @@ public class MatchingController {
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(matchingService.createMatchingToItem(request, customOAuth2User.getUsername()));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MatchingListResponse>> getMatchingList(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.ok(matchingService.getMatchingList(customOAuth2User.getUsername()));
     }
 
     @GetMapping("/{matchingId}")

@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemRecommend {
-    @JsonProperty("item_id")
     private Long itemId;
     private String title;
-    @JsonProperty("media_type")
+    @JsonProperty("item_category")
+    private String category;
     private String mediaType;
-    private int score;
+    private float score;
     @JsonProperty("item_content")
     private String content;
 }

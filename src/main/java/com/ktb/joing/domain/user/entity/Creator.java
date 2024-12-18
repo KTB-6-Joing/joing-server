@@ -57,6 +57,9 @@ public class Creator extends User{
         if (request.getProfileImage() != null) {
             updateProfileImage(request.getProfileImage());
         }
+        if (request.getSubscribers() != null){
+            this.subscribers = request.getSubscribers();
+        }
     }
 
 }

@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProfileEvaluationResponse {
     private boolean evaluationStatus;
+    private Long subscribers;
     private String channelImage;
     private String reason;
 
     @Builder
-    public ProfileEvaluationResponse(boolean evaluationStatus, String channelImage, String reason) {
+    public ProfileEvaluationResponse(boolean evaluationStatus, Long subscribers, String channelImage, String reason) {
         this.evaluationStatus = evaluationStatus;
+        this.subscribers = subscribers;
         this.channelImage = channelImage;
         this.reason = reason;
     }

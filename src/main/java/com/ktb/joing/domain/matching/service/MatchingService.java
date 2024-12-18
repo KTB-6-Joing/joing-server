@@ -7,6 +7,7 @@ import com.ktb.joing.domain.item.repository.ItemRepository;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
 import com.ktb.joing.domain.matching.dto.response.MatchingDetailResponse;
+import com.ktb.joing.domain.matching.dto.response.MatchingListResponse;
 import com.ktb.joing.domain.matching.entity.MatchingSender;
 import com.ktb.joing.domain.matching.entity.MatchingStatus;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
@@ -24,6 +25,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -78,6 +82,19 @@ public class MatchingService {
         sendMatchingNotification(matching, MatchingStatus.PENDING);
 
         return new MatchingResponse(matching);
+    }
+
+    // 매칭 기록 조회 - 취소, 거절 된 매칭을 제외하고 조회
+    public List<MatchingListResponse> getMatchingList(String username) {
+        List<Matching> matchings = matchingRepository.findActiveMatchingsByUsername(username);
+
+        return matchings.stream()
+                .map(matching -> MatchingListResponse.builder()
+                        .matchingId(matching.getId())
+                        .title(matching.getItem().getTitle())
+                        .status(matching.getStatus())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // 매칭 자세한 내용 - 매칭 수락시 화면

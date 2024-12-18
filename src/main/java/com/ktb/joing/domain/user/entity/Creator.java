@@ -54,6 +54,12 @@ public class Creator extends User{
         if (request.getChannelUrl() != null) {
             this.channelUrl = request.getChannelUrl();
         }
+        if (request.getProfileImage() != null) {
+            updateProfileImage(request.getProfileImage());
+        }
+        if (request.getSubscribers() != null){
+            this.subscribers = request.getSubscribers();
+        }
     }
 
 }

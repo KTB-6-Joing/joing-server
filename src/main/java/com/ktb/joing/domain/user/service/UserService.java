@@ -51,12 +51,14 @@ public class UserService {
                 .username(tempUser.getId())
                 .email(request.getEmail())
                 .nickname(request.getNickname())
-                .profileImage(tempUser.getProfileImage())
+                .profileImage(request.getProfileImage())
                 .profileSetup(true)
                 .role(Role.ROLE_USER)
                 .socialId(tempUser.getSocialId())
                 .socialProvider(tempUser.getSocialProvider())
+                .channelId(request.getChannelId())
                 .channelUrl(request.getChannelUrl())
+                .subscribers(request.getSubscribers())
                 .mediaType(request.getMediaType())
                 .category(request.getCategory())
                 .build();
@@ -126,7 +128,6 @@ public class UserService {
         creator.update(request);
         return CreatorResponse.builder().creator(creator).build();
     }
-
 
     // 회원 정보 수정(기획자)
     @Transactional

@@ -17,10 +17,10 @@ import com.ktb.joing.domain.user.entity.Creator;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -73,7 +73,7 @@ public class RecommendService {
     private CreatorRecommendRequest creatorRecommendRequest(Item item) {
         return CreatorRecommendRequest.builder()
                 .title(item.getTitle())
-                .category(item.getCategory().toString().toLowerCase())
+                .category(item.getCategory().toString())
                 .mediaType(item.getMediaType().toString().toLowerCase())
                 .score(item.getScore())
                 .content(item.getContent())
@@ -83,7 +83,7 @@ public class RecommendService {
     private ItemRecommendRequest itemRecommendRequest(Creator creator) {
         return ItemRecommendRequest.builder()
                 .nickname(creator.getNickname())
-                .category(creator.getCategory().toString().toUpperCase())
+                .category(creator.getCategory().toString())
                 .subscribers(creator.getSubscribers())
                 .build();
     }

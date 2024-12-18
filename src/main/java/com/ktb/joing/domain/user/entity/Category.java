@@ -16,6 +16,8 @@ public enum Category {
     PEOPLE_BLOG("인물/블로그"),
     AUTO_TRANSPORT("자동차/교통"),
     COMEDY("코미디"),
+    KIDS("유아"),
+    FOOD_COOKING("요리"),
     ETC("기타");
 
     private final String value;

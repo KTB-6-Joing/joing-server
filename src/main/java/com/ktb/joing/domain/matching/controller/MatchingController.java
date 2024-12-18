@@ -4,6 +4,7 @@ import com.ktb.joing.domain.auth.dto.CustomOAuth2User;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToCreator;
 import com.ktb.joing.domain.matching.dto.request.MatchingRequestToItem;
 import com.ktb.joing.domain.matching.dto.request.MatchingStatusRequest;
+import com.ktb.joing.domain.matching.dto.response.MatchingDetailResponse;
 import com.ktb.joing.domain.matching.dto.response.MatchingResponse;
 import com.ktb.joing.domain.matching.service.MatchingService;
 import jakarta.validation.Valid;
@@ -45,6 +46,13 @@ public class MatchingController {
     }
 
     @GetMapping("/{matchingId}")
+    public ResponseEntity<MatchingDetailResponse> getMatching(
+            @PathVariable Long matchingId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        return ResponseEntity.ok(matchingService.getMatching(matchingId, customOAuth2User.getUsername()));
+    }
+
+    @GetMapping("/{matchingId}/status")
     public ResponseEntity<MatchingResponse> getMatchingStatus(
             @PathVariable Long matchingId,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {

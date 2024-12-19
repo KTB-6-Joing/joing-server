@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatorRecommendView {
+    private Long id;
     private String profileImage;
     private String nickname;
     private String channelUrl;
 
     @Builder
-    public CreatorRecommendView(String profileImage, String nickname, String channelUrl) {
+    public CreatorRecommendView(Long id, String profileImage, String nickname, String channelUrl) {
+        this.id = id;
         this.profileImage = profileImage;
         this.nickname = nickname;
         this.channelUrl = channelUrl;

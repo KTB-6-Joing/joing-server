@@ -6,6 +6,7 @@ import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
+import com.ktb.joing.domain.user.dto.response.NicknameAvailableResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.response.SignupResponse;
 import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -82,6 +84,11 @@ public class UserController {
             @PathVariable String channelId) {
         return userService.profileEvaluation(channelId)
                 .map(ResponseEntity::ok);
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<NicknameAvailableResponse> checkNicknameDuplicate(@RequestParam String nickname) {
+        return ResponseEntity.ok(userService.checkNicknameDuplicate(nickname));
     }
 
 }

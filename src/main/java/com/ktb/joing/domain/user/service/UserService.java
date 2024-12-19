@@ -9,6 +9,7 @@ import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
 import com.ktb.joing.domain.user.dto.response.CreatorResponse;
+import com.ktb.joing.domain.user.dto.response.NicknameAvailableResponse;
 import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
 import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
 import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
@@ -45,8 +46,6 @@ public class UserService {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
 
-        validateDuplicateNickname(request.getNickname());
-
         Creator creator = Creator.builder()
                 .username(tempUser.getId())
                 .email(request.getEmail())
@@ -74,8 +73,6 @@ public class UserService {
     public SignupResponse productManagerSignUp(String username, ProductManagerSignupRequest request) {
         TempUser tempUser = tempUserRepository.findById(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.TEMP_USER_NOT_FOUND));
-
-        validateDuplicateNickname(request.getNickname());
 
         ProductManager user = ProductManager.builder()
                 .username(tempUser.getId())
@@ -121,10 +118,6 @@ public class UserService {
         Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        if (request.getNickname() != null) {
-            validateDuplicateNickname(request.getNickname());
-        }
-
         creator.update(request);
         return CreatorResponse.builder().creator(creator).build();
     }
@@ -135,19 +128,17 @@ public class UserService {
         ProductManager productManager = productManagerRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        if (request.getNickname() != null) {
-            validateDuplicateNickname(request.getNickname());
-        }
-
         productManager.update(request);
         return ProductManagerResponse.builder().productManager(productManager).build();
     }
 
     // 닉네임 중복 확인
-    private void validateDuplicateNickname(String nickname) {
-        if (userRepository.existsByNickname(nickname)) {
-            throw new UserException(UserErrorCode.DUPLICATED_NICKNAME);
-        }
+    public NicknameAvailableResponse checkNicknameDuplicate(String nickname) {
+        boolean available = !userRepository.existsByNickname(nickname);
+
+        return NicknameAvailableResponse.builder()
+                .available(available)
+                .build();
     }
 
     // 크리에이터 프로필(채널) 유해성 검사
@@ -161,5 +152,4 @@ public class UserService {
                     return new UserException(UserErrorCode.PROFILE_EVALUATION_FAILED);
                 });
     }
-
 }

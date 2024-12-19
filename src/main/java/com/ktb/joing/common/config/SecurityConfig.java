@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .securityMatcher("/**") // 모든 요청에 대해
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/healthz", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/api/v1/users/exists").permitAll()
                         .requestMatchers("/api/v1/users/evaluation/**").permitAll() // AI 서버 관련 엔드 포인트
                         .requestMatchers("/api/v1/items/*/evaluation").permitAll()
                         .requestMatchers("/api/v1/items/*/summary").permitAll()

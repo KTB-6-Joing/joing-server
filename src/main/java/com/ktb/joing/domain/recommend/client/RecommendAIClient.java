@@ -32,7 +32,7 @@ public class RecommendAIClient {
     // 크리에이터로 -> 기획안 추천 받음
     public Mono<ItemRecommendResponse> requestItemRecommend(ItemRecommendRequest request){
         return reactiveHttpService.post(
-            aiUrl + "/rec/recommend/item",
+                aiUrl + "/rec/recommend/item",
                 request,
                 ItemRecommendResponse.class
         ).doOnError(e -> log.error("AI 기획안 추천 요청 실패: {}", e.getMessage()));

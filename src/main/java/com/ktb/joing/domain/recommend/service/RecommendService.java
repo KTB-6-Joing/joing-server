@@ -17,10 +17,10 @@ import com.ktb.joing.domain.user.entity.Creator;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class RecommendService {
     private final RecommendAIClient recommendAIClient;
     private final ItemRepository itemRepository;
     private final CreatorRepository creatorRepository;
 
     // 기획안를 가지고 -> 크리에이터 추천
+    @Transactional
     public Mono<List<CreatorRecommendView>> getRecommendedCreators(Long itemId, String username) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
@@ -56,6 +56,7 @@ public class RecommendService {
     }
 
     // 크리에이터 가지고 -> 기획안 추천
+    @Transactional
     public Mono<List<ItemRecommendView>> getRecommendedItems(String username) {
         Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
@@ -64,9 +65,11 @@ public class RecommendService {
         ItemRecommendRequest request = itemRecommendRequest(creator);
 
         return recommendAIClient.requestItemRecommend(request)
-                .map(response -> response.getRecommendedItems().stream()
-                        .map(this::mapToItemRecommendView)
-                        .collect(Collectors.toList()))
+                .map(response ->
+                        response.getRecommendedItems().stream()
+                                .map(this::mapToItemRecommendView)
+                                .collect(Collectors.toList())
+                )
                 .onErrorMap(e -> new RecommendException(RecommendErrorCode.AI_RECOMMEND_FAILED));
     }
 
@@ -100,13 +103,19 @@ public class RecommendService {
     }
 
     private ItemRecommendView mapToItemRecommendView(ItemRecommend recommend) {
-        Item item = itemRepository.findById(recommend.getItemId())
+        return itemRepository.findItemRecommendViewById(recommend.getItemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
-
-        return ItemRecommendView.builder()
-                .title(recommend.getTitle())
-                .content(recommend.getContent())
-                .keywords(item.getSummary().getKeyword())
-                .build();
     }
+
+//    private ItemRecommendView mapToItemRecommendView(ItemRecommend recommend) {
+//        Item item = itemRepository.findById(recommend.getItemId())
+//                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+//
+//        return ItemRecommendView.builder()
+//                .title(item.getTitle())
+//                .content(item.getContent())
+//                .keywords(item.getSummary().getKeyword())
+//                .build();
+//    }
+
 }

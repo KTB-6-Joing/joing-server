@@ -65,8 +65,7 @@ public class RecommendService {
         ItemRecommendRequest request = itemRecommendRequest(creator);
 
         return recommendAIClient.requestItemRecommend(request)
-                .map(response ->
-                        response.getRecommendedItems().stream()
+                .map(response -> response.getRecommendedItems().stream()
                                 .map(this::mapToItemRecommendView)
                                 .collect(Collectors.toList())
                 )

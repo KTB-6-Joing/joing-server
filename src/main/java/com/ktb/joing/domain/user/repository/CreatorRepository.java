@@ -12,6 +12,7 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
     Optional<Creator> findByUsername(String username);
 
     @Query("SELECT new com.ktb.joing.domain.recommend.dto.response.CreatorRecommendView(" +
+            "c.id, " +
             "c.profileImage, " +
             "c.nickname, " +
             "c.channelUrl) " +

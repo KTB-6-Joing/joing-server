@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ItemRecommendView {
+    private Long id;
     private String title;
     private String content;
     private String keywords;
 
     @Builder
-    public ItemRecommendView(String title, String content, String keywords) {
+    public ItemRecommendView(Long id, String title, String content, String keywords) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.keywords = keywords;

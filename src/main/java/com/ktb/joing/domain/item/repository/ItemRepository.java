@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT new com.ktb.joing.domain.recommend.dto.response.ItemRecommendView(" +
+            "i.id, " +
             "i.title, " +
             "i.content, " +
             "i.summary.keyword) " +

@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchingDetailResponse {
@@ -16,7 +19,7 @@ public class MatchingDetailResponse {
     private Long itemId;
     private String itemTitle;
     private String itemContent;
-    private String itemKeyword;
+    private List<String> itemKeyword;
 
     private String creatorNickname;
     private String creatorProfileImage;
@@ -33,8 +36,8 @@ public class MatchingDetailResponse {
 
         this.itemId = matching.getItem().getId();
         this.itemTitle = matching.getItem().getTitle();
-        this.itemContent = matching.getItem().getContent();
-        this.itemKeyword = matching.getItem().getSummary().getKeyword();
+        this.itemContent = matching.getItem().getSummary().getContent();
+        this.itemKeyword = Arrays.asList(matching.getItem().getSummary().getKeyword().split(","));
 
         this.creatorNickname = matching.getCreator().getNickname();
         this.creatorProfileImage = matching.getCreator().getProfileImage();

@@ -92,30 +92,12 @@ public class RecommendService {
     }
 
     private CreatorRecommendView mapToCreatorRecommendView(CreatorRecommend recommend) {
-        Creator creator = creatorRepository.findById(recommend.getCreatorId())
+        return creatorRepository.findCreatorRecommendViewById(recommend.getCreatorId())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-
-        return CreatorRecommendView.builder()
-                .profileImage(creator.getProfileImage())
-                .nickname(creator.getNickname())
-                .channelUrl(creator.getChannelUrl())
-                .build();
     }
 
     private ItemRecommendView mapToItemRecommendView(ItemRecommend recommend) {
         return itemRepository.findItemRecommendViewById(recommend.getItemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
     }
-
-//    private ItemRecommendView mapToItemRecommendView(ItemRecommend recommend) {
-//        Item item = itemRepository.findById(recommend.getItemId())
-//                .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
-//
-//        return ItemRecommendView.builder()
-//                .title(item.getTitle())
-//                .content(item.getContent())
-//                .keywords(item.getSummary().getKeyword())
-//                .build();
-//    }
-
 }

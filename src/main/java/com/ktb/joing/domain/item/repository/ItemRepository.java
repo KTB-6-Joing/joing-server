@@ -14,7 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT new com.ktb.joing.domain.recommend.dto.response.ItemRecommendView(" +
             "i.id, " +
             "i.title, " +
-            "i.content, " +
+            "i.summary.content, " +
             "i.summary.keyword) " +
             "FROM Item i WHERE i.id = :itemId")
     Optional<ItemRecommendView> findItemRecommendViewById(@Param("itemId") Long itemId);

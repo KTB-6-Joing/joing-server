@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RequiredArgsConstructor
 public class RecommendAIClient {
-    @Value("${ai.url}")
+    @Value("${ai.url.rec}")
     private String aiUrl;
 
     private final ReactiveHttpService reactiveHttpService;

@@ -14,7 +14,9 @@ spring:
         static: ap-northeast-2
 
 ai:
-  url: ${ai.url}
+  url:
+    gen: ${ai.url.gen}
+    rec: ${ai.url.rec}
 
 app:
   frontend:

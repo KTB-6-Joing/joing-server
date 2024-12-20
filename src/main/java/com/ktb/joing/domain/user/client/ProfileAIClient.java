@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ProfileAIClient {
 
-    @Value("${ai.url}")
+    @Value("${ai.url.gen}")
     private String aiUrl;
 
     private final ReactiveHttpService reactiveHttpService;

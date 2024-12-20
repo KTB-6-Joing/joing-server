@@ -14,9 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(frontendUrl)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
-                .exposedHeaders("Authorization", "Set-Cookie", "access")
+                .exposedHeaders("Set-Cookie", "Authorization")
                 .allowCredentials(true)
                 .maxAge(3600L);
     }

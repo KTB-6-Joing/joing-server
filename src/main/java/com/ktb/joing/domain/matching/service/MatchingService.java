@@ -217,7 +217,7 @@ public class MatchingService {
 
             case ACCEPTED:
             case REJECTED:
-                String actionStr = action.toString().toLowerCase();
+                String actionStr = (action.toString().equals("ACCEPTED")) ? "수락" : "거절";
                 if (isProductManagerSender) {
                     notificationContent = String.format("[매칭 %s] '%s' 기획안에 대한 매칭 요청이 %s되었습니다.",
                             actionStr, matching.getItem().getTitle(), actionStr);

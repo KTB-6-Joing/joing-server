@@ -138,16 +138,16 @@ public class MatchingService {
         // 권한 검증 - 매칭을 요청한 사람만 취소 가능
         if (matching.getSender() == MatchingSender.PRODUCT_MANAGER) {
             if (!matching.getItem().getProductManager().getUsername().equals(username)) {
-                throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
+                throw new MatchingException(MatchingErrorCode.MATCHING_REQUEST_NOT_AUTHORIZED);
             }
         } else {
             if (!matching.getCreator().getUsername().equals(username)) {
-                throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
+                throw new MatchingException(MatchingErrorCode.MATCHING_REQUEST_NOT_AUTHORIZED);
             }
         }
 
         if (matching.getStatus() != MatchingStatus.PENDING) {
-            throw new MatchingException(MatchingErrorCode.INVALID_MATCHING_STATUS);
+            throw new MatchingException(MatchingErrorCode.MATCHING_CANCEL_NOT_ALLOWED);
         }
 
         matching.cancel();
@@ -156,7 +156,7 @@ public class MatchingService {
         sendMatchingNotification(matching, MatchingStatus.CANCELED);
     }
 
-    // 매칭 답장에 대한 응답 - 매칭 상태 변경 (수락/ 거절)
+    // 매칭 요청에 대한 응답 - 매칭 상태 변경 (수락/ 거절)
     public MatchingResponse updateMatchingStatus(Long matchingId, MatchingStatus newStatus, String username) {
         Matching matching = matchingRepository.findById(matchingId)
                 .orElseThrow(() -> new MatchingException(MatchingErrorCode.MATCHING_NOT_FOUND));
@@ -167,11 +167,24 @@ public class MatchingService {
         }
 
         if (matching.getStatus() != MatchingStatus.PENDING) {
-            throw new MatchingException(MatchingErrorCode.MATCHING_CANCEL_NOT_ALLOWED);
+            throw new MatchingException(MatchingErrorCode.MATCHING_ALREADY_PROCESSED);
         }
 
         if (newStatus != MatchingStatus.ACCEPTED && newStatus != MatchingStatus.REJECTED) {
             throw new MatchingException(MatchingErrorCode.INVALID_MATCHING_STATUS);
+        }
+
+        // 매칭 수락시 다른 대기중인 매칭들은 자동으로 매칭 취소
+        if (newStatus == MatchingStatus.ACCEPTED) {
+            matching.getItem().match();
+
+            matchingRepository.findByItemAndStatus(matching.getItem(), MatchingStatus.PENDING)
+                    .forEach(m -> {
+                        if (!m.getId().equals(matchingId)) {
+                            m.updateStatus(MatchingStatus.CANCELED);
+                            sendMatchingNotification(m, MatchingStatus.CANCELED);
+                        }
+                    });
         }
 
         matching.updateStatus(newStatus);

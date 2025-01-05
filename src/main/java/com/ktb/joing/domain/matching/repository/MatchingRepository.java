@@ -1,6 +1,8 @@
 package com.ktb.joing.domain.matching.repository;
 
+import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.matching.entity.Matching;
+import com.ktb.joing.domain.matching.entity.MatchingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +16,5 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
             ":#{T(com.ktb.joing.domain.matching.entity.MatchingStatus).REJECTED})")
     List<Matching> findActiveMatchingsByUsername(@Param("username") String username);
 
+    List<Matching> findByItemAndStatus(Item item, MatchingStatus status);
 }

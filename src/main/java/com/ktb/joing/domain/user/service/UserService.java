@@ -48,18 +48,18 @@ public class UserService {
 
         Creator creator = Creator.builder()
                 .username(tempUser.getId())
-                .email(request.getEmail())
-                .nickname(request.getNickname())
-                .profileImage(request.getProfileImage())
+                .email(request.email())
+                .nickname(request.nickname())
+                .profileImage(request.profileImage())
                 .profileSetup(true)
                 .role(Role.ROLE_USER)
                 .socialId(tempUser.getSocialId())
                 .socialProvider(tempUser.getSocialProvider())
-                .channelId(request.getChannelId())
-                .channelUrl(request.getChannelUrl())
-                .subscribers(request.getSubscribers())
-                .mediaType(request.getMediaType())
-                .category(request.getCategory())
+                .channelId(request.channelId())
+                .channelUrl(request.channelUrl())
+                .subscribers(request.subscribers())
+                .mediaType(request.mediaType())
+                .category(request.category())
                 .build();
 
         userRepository.save(creator);
@@ -79,13 +79,13 @@ public class UserService {
                 .profileImage(tempUser.getProfileImage())
                 .socialId(tempUser.getSocialId())
                 .socialProvider(tempUser.getSocialProvider())
-                .email(request.getEmail())
-                .nickname(request.getNickname())
+                .email(request.email())
+                .nickname(request.nickname())
                 .profileSetup(true)
                 .role(Role.ROLE_USER)
                 .build();
 
-        request.getFavoriteCategories().forEach(category -> {
+        request.favoriteCategories().forEach(category -> {
             FavoriteCategory favoriteCategory = FavoriteCategory.builder()
                     .category(category)
                     .build();
@@ -102,14 +102,14 @@ public class UserService {
     public CreatorResponse getCreatorInfo(String username) {
         Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        return CreatorResponse.builder().creator(creator).build();
+        return CreatorResponse.from(creator);
     }
 
     // 회원 정보 조회(기획자)
     public ProductManagerResponse getProductManagerInfo(String username) {
         ProductManager productManager = productManagerRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        return ProductManagerResponse.builder().productManager(productManager).build();
+        return ProductManagerResponse.from(productManager);
     }
 
     // 회원 정보 수정(크리에이터)
@@ -119,7 +119,7 @@ public class UserService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         creator.update(request);
-        return CreatorResponse.builder().creator(creator).build();
+        return CreatorResponse.from(creator);
     }
 
     // 회원 정보 수정(기획자)
@@ -129,16 +129,14 @@ public class UserService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         productManager.update(request);
-        return ProductManagerResponse.builder().productManager(productManager).build();
+        return ProductManagerResponse.from(productManager);
     }
 
     // 닉네임 중복 확인
     public NicknameAvailableResponse checkNicknameDuplicate(String nickname) {
         boolean available = !userRepository.existsByNickname(nickname);
 
-        return NicknameAvailableResponse.builder()
-                .available(available)
-                .build();
+        return NicknameAvailableResponse.from(available);
     }
 
     // 크리에이터 프로필(채널) 유해성 검사

@@ -3,49 +3,36 @@ package com.ktb.joing.domain.item.dto.response;
 import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.user.entity.Category;
 import com.ktb.joing.domain.user.entity.MediaType;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-import java.util.Arrays;
 import java.util.List;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ItemDetailResponse {
-    private Long id;
-    private String nickname;
-    private String email;
-    private String profileImage;
-    private String title;
-    private String content;
-    private MediaType mediaType;
-    private Category category;
-    private List<EtcResponse> etcs;
-    private SummaryView summary;
-
-    @Builder
-    public ItemDetailResponse(Item item) {
-        this.id = item.getId();
-        this.nickname = item.getProductManager().getNickname();
-        this.email = item.getProductManager().getEmail();
-        this.profileImage = item.getProductManager().getProfileImage();
-        this.title = item.getTitle();
-        this.content = item.getContent();
-        this.mediaType = item.getMediaType();
-        this.category = item.getCategory();
-        this.etcs = item.getEtcs().stream()
-                .map(etc -> EtcResponse.builder()
-                        .etc(etc)
-                        .build())
-                .toList();
-        if (item.getSummary() != null) {
-            this.summary = SummaryView.builder()
-                    .title(item.getSummary().getTitle())
-                    .content(item.getSummary().getContent())
-                    .keywords(Arrays.asList(item.getSummary().getKeyword().split(",")))
-                    .build();
-        }
+public record ItemDetailResponse(
+        Long id,
+        String nickname,
+        String email,
+        String profileImage,
+        String title,
+        String content,
+        MediaType mediaType,
+        Category category,
+        List<EtcResponse> etcs,
+        SummaryView summaryView
+) {
+    public static ItemDetailResponse from(Item item) {
+        return new ItemDetailResponse(item.getId(),
+                item.getProductManager().getNickname(),
+                item.getProductManager().getEmail(),
+                item.getProductManager().getProfileImage(),
+                item.getTitle(),
+                item.getContent(),
+                item.getMediaType(),
+                item.getCategory(),
+                item.getEtcs().stream()
+                        .map(EtcResponse::from)
+                        .toList(),
+                item.getSummary() != null
+                        ? SummaryView.from(item.getSummary())
+                        : null
+        );
     }
 }

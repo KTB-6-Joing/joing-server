@@ -1,21 +1,17 @@
 package com.ktb.joing.domain.notification.dto.response;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.ktb.joing.domain.notification.entity.Notification;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NotificationResponse {
-    private Long notificationId;
-    private String content;
-    private String relatedUrl;
-
-    @Builder
-    public NotificationResponse(Long notificationId, String content, String relatedUrl) {
-        this.notificationId = notificationId;
-        this.content = content;
-        this.relatedUrl = relatedUrl;
+public record NotificationResponse(
+        Long notificationId,
+        String content,
+        String relatedUrl
+) {
+    public static NotificationResponse from(Notification notification) {
+        return new NotificationResponse(
+                notification.getId(),
+                notification.getContent(),
+                notification.getRelatedUrl()
+        );
     }
 }

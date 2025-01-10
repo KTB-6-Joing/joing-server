@@ -1,30 +1,29 @@
 package com.ktb.joing.domain.item.dto.request;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.ktb.joing.domain.item.entity.Etc;
+import com.ktb.joing.domain.item.entity.Item;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
-public class ItemEvaluationRequest {
-    private String title;
-    private String content;
-    private String mediaType;
-    private float proposalScore;
-    private Map<String, String> additionalFeatures;
-
-    @Builder
-    public ItemEvaluationRequest(String title, String content, String mediaType,
-                                 float proposalScore, Map<String, String> additionalFeatures) {
-        this.title = title;
-        this.content = content;
-        this.mediaType = mediaType;
-        this.proposalScore = proposalScore;
-        this.additionalFeatures = additionalFeatures;
+public record ItemEvaluationRequest(
+        String title,
+        String content,
+        String mediaType,
+        float proposalScore,
+        Map<String, String> additionalFeatures
+) {
+    public static ItemEvaluationRequest from(Item item) {
+        return new ItemEvaluationRequest(
+                item.getTitle(),
+                item.getContent(),
+                item.getMediaType().toString().toLowerCase(),
+                item.getScore(),
+                item.getEtcs().stream()
+                        .collect(Collectors.toMap(
+                                Etc::getName,
+                                Etc::getValue
+                        ))
+        );
     }
 }

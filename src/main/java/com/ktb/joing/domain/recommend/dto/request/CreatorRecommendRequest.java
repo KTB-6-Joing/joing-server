@@ -1,28 +1,24 @@
 package com.ktb.joing.domain.recommend.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.ktb.joing.domain.item.entity.Item;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreatorRecommendRequest {
-    private String title;
-    @JsonProperty("item_category")
-    private String category;
-    private String mediaType;
-    private float score;
-    @JsonProperty("item_content")
-    private String content;
-
-    @Builder
-    public CreatorRecommendRequest(String title, String category, String mediaType, float score, String content){
-        this.title = title;
-        this.category = category;
-        this.mediaType = mediaType;
-        this.score = score;
-        this.content = content;
+public record CreatorRecommendRequest(
+        String title,
+        @JsonProperty("item_category")
+        String category,
+        String mediaType,
+        float score,
+        @JsonProperty("item_content")
+        String content
+) {
+    public static CreatorRecommendRequest from(Item item) {
+        return new CreatorRecommendRequest(
+                item.getTitle(),
+                item.getCategory().toString(),
+                item.getMediaType().toString().toLowerCase(),
+                item.getScore(),
+                item.getContent()
+        );
     }
 }

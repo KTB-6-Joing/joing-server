@@ -42,14 +42,19 @@ public class MatchingService {
 
     // 기획자가 크리에이터에게 매칭 요청
     public MatchingResponse createMatchingToCreator(MatchingRequestToCreator request, String username) {
-        Item item = itemRepository.findById(request.getItemId())
+        Item item = itemRepository.findById(request.itemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
-        Creator creator = creatorRepository.findById(request.getCreatorId())
+        Creator creator = creatorRepository.findById(request.creatorId())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         // 권한 검증 - 요청자가 해당 아이템의 기획자인지 확인
         if (!item.getProductManager().getUsername().equals(username)) {
             throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
+        }
+
+        // 매칭 상태 확인
+        if (matchingRepository.isMatched(request.itemId(), request.creatorId())) {
+            throw new MatchingException(MatchingErrorCode.MATCHING_ALREADY_EXISTS);
         }
 
         Matching matching = Matching.builder()
@@ -61,16 +66,21 @@ public class MatchingService {
         matching = matchingRepository.save(matching);
         sendMatchingNotification(matching, MatchingStatus.PENDING);
 
-        return new MatchingResponse(matching);
+        return MatchingResponse.from(matching);
     }
 
     // 크리에이터가 기획자(기획안)에게 매칭 요청
     public MatchingResponse createMatchingToItem(MatchingRequestToItem request, String username) {
-        Item item = itemRepository.findById(request.getItemId())
+        Item item = itemRepository.findById(request.itemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
 
         Creator creator = creatorRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        // 매칭 상태 확인
+        if (matchingRepository.isMatched(request.itemId(), creator.getId())) {
+            throw new MatchingException(MatchingErrorCode.MATCHING_ALREADY_EXISTS);
+        }
 
         Matching matching = Matching.builder()
                 .item(item)
@@ -81,7 +91,7 @@ public class MatchingService {
         matching = matchingRepository.save(matching);
         sendMatchingNotification(matching, MatchingStatus.PENDING);
 
-        return new MatchingResponse(matching);
+        return MatchingResponse.from(matching);
     }
 
     // 매칭 기록 조회 - 취소, 거절 된 매칭을 제외하고 조회
@@ -89,11 +99,7 @@ public class MatchingService {
         List<Matching> matchings = matchingRepository.findActiveMatchingsByUsername(username);
 
         return matchings.stream()
-                .map(matching -> MatchingListResponse.builder()
-                        .matchingId(matching.getId())
-                        .title(matching.getItem().getTitle())
-                        .status(matching.getStatus())
-                        .build())
+                .map(MatchingListResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -109,9 +115,7 @@ public class MatchingService {
             throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
         }
 
-        return MatchingDetailResponse.builder()
-                .matching(matching)
-                .build();
+        return MatchingDetailResponse.from(matching);
     }
 
     // 매칭 상태 조회
@@ -125,9 +129,7 @@ public class MatchingService {
             throw new MatchingException(MatchingErrorCode.MATCHING_NOT_AUTHORIZED);
         }
 
-        return MatchingResponse.builder()
-                .matching(matching)
-                .build();
+        return MatchingResponse.from(matching);
     }
 
     // 매칭 취소
@@ -192,7 +194,7 @@ public class MatchingService {
 
         sendMatchingNotification(matching, newStatus);
 
-        return new MatchingResponse(matching);
+        return MatchingResponse.from(matching);
     }
 
     private void sendMatchingNotification(Matching matching, MatchingStatus action) {

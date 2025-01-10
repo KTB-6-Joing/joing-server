@@ -51,7 +51,7 @@ public class RecommendService {
         CreatorRecommendRequest request = creatorRecommendRequest(item);
 
         return recommendAIClient.requestCreatorRecommend(request)
-                .map(response -> response.getRecommendedCreators().stream()
+                .map(response -> response.recommendedCreators().stream()
                         .map(creator -> mapToCreatorRecommendView(creator, itemId))  // itemId 전달
                         .collect(Collectors.toList()))
                 .onErrorMap(e -> new RecommendException(RecommendErrorCode.AI_RECOMMEND_FAILED));
@@ -67,32 +67,22 @@ public class RecommendService {
         ItemRecommendRequest request = itemRecommendRequest(creator);
 
         return recommendAIClient.requestItemRecommend(request)
-                .map(response -> response.getRecommendedItems().stream()
+                .map(response -> response.recommendedItems().stream()
                         .map(item -> mapToItemRecommendView(item, creator.getId()))
                         .collect(Collectors.toList()))
                 .onErrorMap(e -> new RecommendException(RecommendErrorCode.AI_RECOMMEND_FAILED));
     }
 
     private CreatorRecommendRequest creatorRecommendRequest(Item item) {
-        return CreatorRecommendRequest.builder()
-                .title(item.getTitle())
-                .category(item.getCategory().toString())
-                .mediaType(item.getMediaType().toString().toLowerCase())
-                .score(item.getScore())
-                .content(item.getContent())
-                .build();
+        return CreatorRecommendRequest.from(item);
     }
 
     private ItemRecommendRequest itemRecommendRequest(Creator creator) {
-        return ItemRecommendRequest.builder()
-                .nickname(creator.getNickname())
-                .category(creator.getCategory().toString())
-                .subscribers(creator.getSubscribers())
-                .build();
+        return ItemRecommendRequest.from(creator);
     }
 
     private CreatorRecommendView mapToCreatorRecommendView(CreatorRecommend recommend, Long itemId) {
-        CreatorRecommendView view = creatorRepository.findCreatorRecommendViewById(recommend.getCreatorId())
+        CreatorRecommendView view = creatorRepository.findCreatorRecommendViewById(recommend.creatorId())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
         return CreatorRecommendView.builder()
@@ -105,7 +95,7 @@ public class RecommendService {
     }
 
     private ItemRecommendView mapToItemRecommendView(ItemRecommend recommend, Long creatorId) {
-        ItemRecommendView view = itemRepository.findItemRecommendViewById(recommend.getItemId())
+        ItemRecommendView view = itemRepository.findItemRecommendViewById(recommend.itemId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
 
         return ItemRecommendView.builder()

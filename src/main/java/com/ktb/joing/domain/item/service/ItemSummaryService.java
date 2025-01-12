@@ -4,7 +4,6 @@ import com.ktb.joing.domain.item.client.ItemAIClient;
 import com.ktb.joing.domain.item.dto.request.ItemEvaluationRequest;
 import com.ktb.joing.domain.item.dto.response.SummaryResponse;
 import com.ktb.joing.domain.item.dto.response.SummaryView;
-import com.ktb.joing.domain.item.entity.Etc;
 import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.item.entity.Summary;
 import com.ktb.joing.domain.item.exception.ItemErrorCode;
@@ -15,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -39,42 +36,32 @@ public class ItemSummaryService {
 
         return itemAIClient.regenerateSummary(request)
                 .map(response -> {
-                    updateItemSummary(item, response.getSummary());
-                    return response.getSummary().toView();
+                    updateItemSummary(item, response.summary());
+                    return response.summary().toView();
                 })
                 .onErrorMap(e -> new ItemException(ItemErrorCode.AI_EVALUATION_FAILED));
     }
 
     private ItemEvaluationRequest createSummaryRequest(Item item) {
-        return ItemEvaluationRequest.builder()
-                .title(item.getTitle())
-                .content(item.getContent())
-                .mediaType(item.getMediaType().toString().toLowerCase())
-                .proposalScore(item.getScore())
-                .additionalFeatures(item.getEtcs().stream()
-                        .collect(Collectors.toMap(
-                                Etc::getName,
-                                Etc::getValue
-                        )))
-                .build();
+        return ItemEvaluationRequest.from(item);
     }
 
     public void updateItemSummary(Item item, SummaryResponse summaryResponse) {
         Summary summary = item.getSummary();
         if (summary == null) {
             summary = Summary.builder()
-                    .title(summaryResponse.getTitle())
-                    .content(summaryResponse.getContent())
-                    .keyword(String.join(",", summaryResponse.getKeywords()))
+                    .title(summaryResponse.title())
+                    .content(summaryResponse.content())
+                    .keyword(String.join(",", summaryResponse.keywords()))
                     .build();
             item.setSummary(summary);
             itemRepository.save(item);
         } else {
-            String keyword = summaryResponse.getKeywords() != null ?
-                    String.join(",", summaryResponse.getKeywords()) : null;
+            String keyword = summaryResponse.keywords() != null ?
+                    String.join(",", summaryResponse.keywords()) : null;
             summary.update(
-                    summaryResponse.getTitle(),
-                    summaryResponse.getContent(),
+                    summaryResponse.title(),
+                    summaryResponse.content(),
                     keyword
             );
             itemRepository.save(item);

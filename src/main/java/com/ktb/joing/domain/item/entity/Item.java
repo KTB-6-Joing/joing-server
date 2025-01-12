@@ -1,6 +1,8 @@
 package com.ktb.joing.domain.item.entity;
 
 import com.ktb.joing.common.model.BaseTimeEntity;
+import com.ktb.joing.domain.item.exception.ItemErrorCode;
+import com.ktb.joing.domain.item.exception.ItemException;
 import com.ktb.joing.domain.user.entity.Category;
 import com.ktb.joing.domain.user.entity.MediaType;
 import com.ktb.joing.domain.user.entity.ProductManager;
@@ -62,6 +64,8 @@ public class Item extends BaseTimeEntity {
     @OneToOne(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private Summary summary;
 
+    private boolean isMatched;
+
     public void addEtc(Etc etc) {
         this.etcs.add(etc);
         etc.setItem(this);
@@ -95,9 +99,17 @@ public class Item extends BaseTimeEntity {
         newEtcs.forEach(this::addEtc);
     }
 
+
+    public void match() {
+        if (isMatched) {
+            throw new ItemException(ItemErrorCode.ALREADY_MATCHED);
+        }
+        this.isMatched = true;
+    }
+
     @Builder
     public Item(String title, String content, MediaType mediaType, int score,
-                 ProductManager productManager, Category category, Summary summary) {
+                ProductManager productManager, Category category, Summary summary) {
         this.title = title;
         this.content = content;
         this.mediaType = mediaType;
@@ -105,5 +117,6 @@ public class Item extends BaseTimeEntity {
         this.productManager = productManager;
         this.category = category;
         this.summary = summary;
+        this.isMatched = false;
     }
 }

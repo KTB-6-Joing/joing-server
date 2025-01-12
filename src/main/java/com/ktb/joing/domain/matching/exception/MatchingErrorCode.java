@@ -18,7 +18,6 @@ public enum MatchingErrorCode implements ErrorCode {
 
     // 매칭 상태 관련 에러
     INVALID_MATCHING_STATUS(HttpStatus.BAD_REQUEST, "잘못된 매칭 상태입니다."),
-    MATCHING_STATUS_TRANSITION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "해당 상태로 변경할 수 없습니다."),
     MATCHING_ALREADY_PROCESSED(HttpStatus.BAD_REQUEST, "이미 처리된 매칭입니다."),
 
     // 매칭 생성 관련 에러

@@ -35,28 +35,26 @@ public class ItemService {
                 .orElseThrow(() -> new ItemException(ItemErrorCode.INVALID_USER_TYPE));
 
         Item item = Item.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .mediaType(request.getMediaType())
-                .category(request.getCategory())
+                .title(request.title())
+                .content(request.content())
+                .mediaType(request.mediaType())
+                .category(request.category())
                 .build();
 
         item.setProductManager(productManager);
 
-        if (request.getEtcs() != null && !request.getEtcs().isEmpty()) {
-            request.getEtcs().forEach(etcRequest -> {
+        if (request.etcs() != null && !request.etcs().isEmpty()) {
+            request.etcs().forEach(etcRequest -> {
                 Etc etc = Etc.builder()
-                        .name(etcRequest.getName())
-                        .value(etcRequest.getValue())
+                        .name(etcRequest.name())
+                        .value(etcRequest.value())
                         .build();
                 item.addEtc(etc);
             });
         }
 
-        Item savedItem = itemRepository.save(item);
-        return ItemResponse.builder()
-                .item(savedItem)
-                .build();
+        itemRepository.save(item);
+        return ItemResponse.from(item);
     }
 
     // 기획안 단 건 조회
@@ -64,9 +62,7 @@ public class ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
 
-        return ItemDetailResponse.builder()
-                .item(item)
-                .build();
+        return ItemDetailResponse.from(item);
     }
 
     // 기획안 리스트 조회 - 특정 기획자 사용자의 최근 3개월 기획안 기록 조회
@@ -75,9 +71,7 @@ public class ItemService {
 
         return itemRepository.findRecentItems(username, threeMonthsAgo)
                 .stream()
-                .map(item -> ItemRecentResponse.builder()
-                        .item(item)
-                        .build())
+                .map(ItemRecentResponse::from)
                 .toList();
     }
 
@@ -91,25 +85,23 @@ public class ItemService {
             throw new ItemException(ItemErrorCode.ITEM_NOT_AUTHORIZED);
         }
 
-        item.update(request.getTitle(),
-                request.getContent(),
-                request.getMediaType(),
-                request.getCategory());
+        item.update(request.title(),
+                request.content(),
+                request.mediaType(),
+                request.category());
 
-        if (request.getEtcs() != null) {
-            List<Etc> newEtcs = request.getEtcs().stream()
+        if (request.etcs() != null) {
+            List<Etc> newEtcs = request.etcs().stream()
                     .map(etcRequest -> Etc.builder()
-                            .name(etcRequest.getName())
-                            .value(etcRequest.getValue())
+                            .name(etcRequest.name())
+                            .value(etcRequest.value())
                             .build())
                     .collect(Collectors.toList());
 
             item.updateEtcs(newEtcs);
         }
 
-        return ItemDetailResponse.builder()
-                .item(item)
-                .build();
+        return ItemDetailResponse.from(item);
     }
 
     // 기획안 삭제

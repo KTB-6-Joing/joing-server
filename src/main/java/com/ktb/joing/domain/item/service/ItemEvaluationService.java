@@ -5,7 +5,6 @@ import com.ktb.joing.domain.item.dto.request.ItemEvaluationRequest;
 import com.ktb.joing.domain.item.dto.response.EvaluationResponse;
 import com.ktb.joing.domain.item.dto.response.ItemEvaluationResponse;
 import com.ktb.joing.domain.item.dto.response.ResponseType;
-import com.ktb.joing.domain.item.entity.Etc;
 import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.item.exception.ItemErrorCode;
 import com.ktb.joing.domain.item.exception.ItemException;
@@ -15,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,8 +37,8 @@ public class ItemEvaluationService {
 
         return itemAIClient.requestEvaluation(request)
                 .doOnSuccess(response -> {
-                    if (response.getEvaluationResult() == 1) {
-                        itemSummaryService.updateItemSummary(item, response.getSummary());
+                    if (response.evaluationResult() == 1) {
+                        itemSummaryService.updateItemSummary(item, response.summary());
                     }
                 })
                 .<EvaluationResponse<?>>map(this::convertToEvaluationResponse)
@@ -49,26 +46,16 @@ public class ItemEvaluationService {
     }
 
     private EvaluationResponse<?> convertToEvaluationResponse(ItemEvaluationResponse response) {
-        if (response.getEvaluationResult() == 0) {
+        if (response.evaluationResult() == 0) {
             return new EvaluationResponse<>(ResponseType.FEEDBACK,
-                    response.getFeedback().toView());
+                    response.feedback().toView());
         } else {
             return new EvaluationResponse<>(ResponseType.SUMMARY,
-                    response.getSummary().toView());
+                    response.summary().toView());
         }
     }
 
     private ItemEvaluationRequest createEvaluationRequest(Item item) {
-        return ItemEvaluationRequest.builder()
-                .title(item.getTitle())
-                .content(item.getContent())
-                .mediaType(item.getMediaType().toString().toLowerCase())
-                .proposalScore(item.getScore())
-                .additionalFeatures(item.getEtcs().stream()
-                        .collect(Collectors.toMap(
-                                Etc::getName,
-                                Etc::getValue
-                        )))
-                .build();
+        return ItemEvaluationRequest.from(item);
     }
 }

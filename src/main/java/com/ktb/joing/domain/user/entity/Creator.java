@@ -36,29 +36,29 @@ public class Creator extends User{
     private Category category;
 
     public void update(CreatorUpdateRequest request) {
-        if (request.getNickname() != null) {
-            updateNickname(request.getNickname());
+        if (request.nickname() != null) {
+            updateNickname(request.nickname());
         }
-        if (request.getEmail() != null) {
-            updateEmail(request.getEmail());
+        if (request.email() != null) {
+            updateEmail(request.email());
         }
-        if (request.getMediaType() != null) {
-            this.mediaType = request.getMediaType();
+        if (request.mediaType() != null) {
+            this.mediaType = request.mediaType();
         }
-        if (request.getCategory() != null) {
-            this.category = request.getCategory();
+        if (request.category() != null) {
+            this.category = request.category();
         }
-        if (request.getChannelId() != null) {
-            this.channelId = request.getChannelId();
+        if (request.channelId() != null) {
+            this.channelId = request.channelId();
         }
-        if (request.getChannelUrl() != null) {
-            this.channelUrl = request.getChannelUrl();
+        if (request.channelUrl() != null) {
+            this.channelUrl = request.channelUrl();
         }
-        if (request.getProfileImage() != null) {
-            updateProfileImage(request.getProfileImage());
+        if (request.profileImage() != null) {
+            updateProfileImage(request.profileImage());
         }
-        if (request.getSubscribers() != null){
-            this.subscribers = request.getSubscribers();
+        if (request.subscribers() != null){
+            this.subscribers = request.subscribers();
         }
     }
 

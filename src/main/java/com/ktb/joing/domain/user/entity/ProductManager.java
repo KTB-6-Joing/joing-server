@@ -37,15 +37,15 @@ public class ProductManager extends User {
     }
 
     public void update(ProductManagerUpdateRequest request) {
-        if (request.getNickname() != null) {
-            updateNickname(request.getNickname());
+        if (request.nickname() != null) {
+            updateNickname(request.nickname());
         }
-        if (request.getEmail() != null) {
-            updateEmail(request.getEmail());
+        if (request.email() != null) {
+            updateEmail(request.email());
         }
-        if (request.getFavoriteCategories() != null && !request.getFavoriteCategories().isEmpty()) {
+        if (request.favoriteCategories() != null && !request.favoriteCategories().isEmpty()) {
             this.favoriteCategories.clear();
-            request.getFavoriteCategories().forEach(category -> {
+            request.favoriteCategories().forEach(category -> {
                 FavoriteCategory favoriteCategory = FavoriteCategory.builder()
                         .category(category)
                         .build();

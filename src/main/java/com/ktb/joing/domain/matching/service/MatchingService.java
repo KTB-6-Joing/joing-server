@@ -178,7 +178,10 @@ public class MatchingService {
 
         // 매칭 수락시 다른 대기중인 매칭들은 자동으로 매칭 취소
         if (newStatus == MatchingStatus.ACCEPTED) {
-            matching.getItem().match();
+            Item item = itemRepository.findByIdWithPessimisticLock(matching.getItem().getId())
+                    .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
+
+            item.match();
 
             matchingRepository.findByItemAndStatus(matching.getItem(), MatchingStatus.PENDING)
                     .forEach(m -> {

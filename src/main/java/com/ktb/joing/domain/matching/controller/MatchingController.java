@@ -84,7 +84,7 @@ public class MatchingController {
             @RequestBody @Valid MatchingStatusRequest request,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         return ResponseEntity.ok(
-                matchingService.updateMatchingStatus(matchingId, request.getStatus(), customOAuth2User.getUsername())
+                matchingService.updateMatchingStatus(matchingId, request.status(), customOAuth2User.getUsername())
         );
     }
 

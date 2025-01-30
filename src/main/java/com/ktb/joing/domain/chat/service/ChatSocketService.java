@@ -9,6 +9,7 @@ import com.ktb.joing.domain.chat.exception.ChatErrorCode;
 import com.ktb.joing.domain.chat.exception.ChatException;
 import com.ktb.joing.domain.chat.repository.ChatMessageRepository;
 import com.ktb.joing.domain.chat.repository.ChatRoomRepository;
+import com.ktb.joing.domain.notification.service.NotificationService;
 import com.ktb.joing.domain.user.entity.User;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
@@ -33,6 +34,7 @@ public class ChatSocketService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     // 채팅방 입장 시 발생하는 메시지 처리
     public void sendEnter(String senderUserId, Long roomId){
@@ -70,11 +72,24 @@ public class ChatSocketService {
     private void sendAndSave(MessageType messageType, String content, ChatRoom chatRoom, User senderUser) {
         ChatMessageSocketResponse chat = new ChatMessageSocketResponse(messageType, content, senderUser, LocalDateTime.now());
 
-        // TODO: 수신자에게 sse 알림 보내기 추가
+        if (messageType == MessageType.CHAT) {
+            sendChatNotification(chatRoom, senderUser);
+        }
 
         template.convertAndSend(TOPIC_CHAT_PREFIX + chatRoom.getId(), chat);
         chatMessageRepository.save(new ChatMessage(chatRoom, messageType, senderUser, content));
+    }
 
+    //수신자에게 sse 알림 보내기
+    private void sendChatNotification(ChatRoom chatRoom, User senderUser) {
+        String notificationContent = String.format("%s님이 메시지를 보냈습니다.", senderUser.getNickname());
+        String relatedUrl = "/chat/rooms/" + chatRoom.getId();
+        User receiver = chatRoom.findMembers().stream()
+                .filter(user -> !user.getUsername().equals(senderUser.getUsername()))
+                .findFirst()
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        notificationService.send(receiver, notificationContent, relatedUrl);
     }
 
 }

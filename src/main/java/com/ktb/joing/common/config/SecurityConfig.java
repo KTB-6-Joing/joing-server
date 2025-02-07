@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/items/*/summary").permitAll()
                         .requestMatchers("/api/v1/recommendations/**").permitAll()
                         .requestMatchers("/signup/**", "/api/v1/users/signup/**").hasRole("TEMP_USER")
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 );
         //세션 설정 : STATELESS

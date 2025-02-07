@@ -46,6 +46,9 @@ dependencies {
 	//webflux (WebClient)
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+	//webSocket (stomp)
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 	//swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 

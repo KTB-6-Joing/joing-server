@@ -29,7 +29,7 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", orphanRemoval = true, cascade = CascadeType.ALL)
     private final List<ChatRoomUser> chatRoomUsers = new ArrayList<>();
 
-    public void addMember(User user,String role) {
+    public void addMember(User user) {
         if (containsUser(user)) {
             throw new ChatException(ChatErrorCode.ROOM_ACCESS_DENIED);
         }
@@ -37,7 +37,6 @@ public class ChatRoom {
                 ChatRoomUser.builder()
                         .chatRoom(this)
                         .user(user)
-                        .role(role)
                         .build()
         );
     }

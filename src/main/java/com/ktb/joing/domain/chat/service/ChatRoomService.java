@@ -9,10 +9,10 @@ import com.ktb.joing.domain.chat.exception.ChatErrorCode;
 import com.ktb.joing.domain.chat.exception.ChatException;
 import com.ktb.joing.domain.chat.repository.ChatMessageRepository;
 import com.ktb.joing.domain.chat.repository.ChatRoomRepository;
-import com.ktb.joing.domain.item.entity.Item;
 import com.ktb.joing.domain.item.exception.ItemErrorCode;
 import com.ktb.joing.domain.item.exception.ItemException;
-import com.ktb.joing.domain.item.repository.ItemRepository;
+import com.ktb.joing.domain.matching.entity.Matching;
+import com.ktb.joing.domain.matching.repository.MatchingRepository;
 import com.ktb.joing.domain.user.entity.User;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
@@ -33,26 +33,26 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
+    private final MatchingRepository matchingRepository;
     private final ChatSocketService chatSocketService;
 
     // 1대1 채팅방 생성
     public CreateChatRoomResponse createChatRoom(String username, CreateChatRoomRequest request) {
-        Item item = itemRepository.findById(request.itemId())
+        Matching matching = matchingRepository.findById(request.matchingId())
                 .orElseThrow(() -> new ItemException(ItemErrorCode.ITEM_NOT_FOUND));
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        User otherUser = userRepository.findById(request.receiverId())
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        String otherRole = request.sender().equals("CREATOR") ? "PRODUCT_MANAGER" : "CREATOR";
+        User otherUser = request.sender().equals("CREATOR")
+                ? matching.getItem().getProductManager()
+                : matching.getCreator();
 
         //이미 있는 방인지 확인
         ChatRoom chatRoom = findExistingChatRoom(username, otherUser)
                 .orElseGet(() -> {
-                    ChatRoom createChatRoom = ChatRoom.builder().item(item).build();
-                    createChatRoom.addMember(user, request.sender()); // 유저 객체, 유저 역할
-                    createChatRoom.addMember(otherUser, otherRole);
+                    ChatRoom createChatRoom = ChatRoom.builder().item(matching.getItem()).build();
+                    createChatRoom.addMember(user);
+                    createChatRoom.addMember(otherUser);
                     return chatRoomRepository.save(createChatRoom);
                 });
 

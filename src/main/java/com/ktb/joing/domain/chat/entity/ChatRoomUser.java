@@ -23,8 +23,6 @@ public class ChatRoomUser extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    private String role;
-
     public boolean hasUser(User user) {
         if (user == null) {
             return false;
@@ -33,9 +31,8 @@ public class ChatRoomUser extends BaseTimeEntity {
     }
 
     @Builder
-    public ChatRoomUser(ChatRoom chatRoom, User user, String role) {
+    public ChatRoomUser(ChatRoom chatRoom, User user) {
         this.chatRoom = chatRoom;
         this.user = user;
-        this.role = role;
     }
 }

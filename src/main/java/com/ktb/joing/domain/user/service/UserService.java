@@ -8,21 +8,15 @@ import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
-import com.ktb.joing.domain.user.dto.response.CreatorResponse;
-import com.ktb.joing.domain.user.dto.response.NicknameAvailableResponse;
-import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
+import com.ktb.joing.domain.user.dto.response.*;
 import com.ktb.joing.domain.user.dto.request.ProfileEvaluationRequest;
-import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
-import com.ktb.joing.domain.user.dto.response.SignupResponse;
-import com.ktb.joing.domain.user.entity.Creator;
-import com.ktb.joing.domain.user.entity.FavoriteCategory;
-import com.ktb.joing.domain.user.entity.ProductManager;
-import com.ktb.joing.domain.user.entity.Role;
+import com.ktb.joing.domain.user.entity.*;
 import com.ktb.joing.domain.user.exception.UserErrorCode;
 import com.ktb.joing.domain.user.exception.UserException;
 import com.ktb.joing.domain.user.repository.CreatorRepository;
 import com.ktb.joing.domain.user.repository.ProductManagerRepository;
 import com.ktb.joing.domain.user.repository.UserRepository;
+import jakarta.persistence.DiscriminatorValue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -110,6 +104,15 @@ public class UserService {
         ProductManager productManager = productManagerRepository.findByUsername(username)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         return ProductManagerResponse.from(productManager);
+    }
+
+    // 현재 인증된 계정 정보 조회
+    public UserResponse getUserInfo(String username){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        String userType = user.getClass().getAnnotation(DiscriminatorValue.class).value();
+        return new UserResponse(username, userType);
     }
 
     // 회원 정보 수정(크리에이터)

@@ -5,11 +5,7 @@ import com.ktb.joing.domain.user.dto.request.CreatorSignupRequest;
 import com.ktb.joing.domain.user.dto.request.CreatorUpdateRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerSignupRequest;
 import com.ktb.joing.domain.user.dto.request.ProductManagerUpdateRequest;
-import com.ktb.joing.domain.user.dto.response.CreatorResponse;
-import com.ktb.joing.domain.user.dto.response.NicknameAvailableResponse;
-import com.ktb.joing.domain.user.dto.response.ProductManagerResponse;
-import com.ktb.joing.domain.user.dto.response.SignupResponse;
-import com.ktb.joing.domain.user.dto.response.ProfileEvaluationResponse;
+import com.ktb.joing.domain.user.dto.response.*;
 import com.ktb.joing.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +56,12 @@ public class UserController {
     @GetMapping("/productmanager")
     public ResponseEntity<ProductManagerResponse> getProductManagerInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
         ProductManagerResponse response = userService.getProductManagerInfo(customOAuth2User.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getUserInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User){
+        UserResponse response = userService.getUserInfo(customOAuth2User.getUsername());
         return ResponseEntity.ok(response);
     }
 
